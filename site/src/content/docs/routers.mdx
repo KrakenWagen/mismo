@@ -1,0 +1,25 @@
+Each app runs on one router, and installs that router's package next to `@mismo/core`. The shared package also installs the package of every router in its [`validFor`](/docs/rules).
+
+| Router | Platform | Package | Versions | Run shared routes | Define shared routes |
+| --- | --- | --- | --- | --- | --- |
+| [Expo Router](/docs/expo-router) | iOS & Android | `@mismo/expo` | `>=58 <59`, React Native 0.79+ | ✓ | ✓ |
+| [Next.js](/docs/nextjs) | Web | `@mismo/next` | `>=16 <17` | ✓ | – |
+| [TanStack Start](/docs/tanstack-start) | Web | `@mismo/tanstack` | TanStack Router `>=1.160` | ✓ | – |
+| [React Router](/docs/react-router) | Web | `@mismo/react-router` | `>=8 <9` | ✓ | ✓ |
+
+- **Run shared routes:** an app on this router can use your shared screens and routes.
+- **Define shared routes:** you can write your shared routes in this router's format. You pick one format for the whole project, and it doesn't limit which routers run them: routes written as an Expo Router folder run on Next.js too. See [defining routes](/docs/routes-folder#other-ways-to-define-routes).
+
+## Picking a web router
+
+All three web routers run the same shared screens. Pick the one you'd pick for a web-only app:
+
+- **Next.js**, for the App Router and its hosting ecosystem. Shared screens are client components, and the generated server pages carry each route's metadata and caching.
+- **TanStack Start**, for type-safe routing and loaders that run on both sides.
+- **React Router**, for framework mode with server loaders and actions, or if your web app already uses it.
+
+Each sets its own options from the shared route. See [route options](/docs/route-options).
+
+## Your own router
+
+The built-in packages use the same interfaces a custom one does. See [writing an adapter](/docs/adapters).

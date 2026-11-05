@@ -1,0 +1,50 @@
+<Install packages="@mismo/tanstack" />
+
+`@mismo/tanstack` runs your shared screens and routes in a TanStack Start app. It supports TanStack Router `>=1.160`.
+
+## Run shared routes
+
+Add mismo's Vite plugin before TanStack Start's:
+
+```ts title="vite.config.ts"
+plugins: [
+  mismo({
+    config: "../../packages/app/routes.config.ts",
+    output: tanstack.output({ outDir: "src/routes", types: "src/routes.gen.ts" }),
+  }),
+  tanstackStart(),
+  react(),
+];
+```
+
+The shared routes then appear in `src/routes` as file routes, next to the app's own: its `__root.tsx`, and routes only it has.
+
+Shared screens are source code in another package, so the server build needs to bundle them:
+
+```ts title="vite.config.ts"
+ssr: { noExternal: ["@acme/app", "@mismo/core", "@mismo/tanstack"] },
+```
+
+## Route options
+
+A route's TanStack options, such as `ssr`, `head`, `beforeLoad` or `loader`, are its `tanstack` export:
+
+```tsx title="routes/(shell)/_layout.tsx"
+import type { TanstackRouteOptions } from "@mismo/tanstack";
+
+export const tanstack = { ssr: false } satisfies TanstackRouteOptions;
+
+export default function Shell() {
+  // …
+}
+```
+
+They reach `createFileRoute`, and the web app's typecheck checks them there. Expo Router ignores the export.
+
+The native app imports the same file, so whatever the options import ships to the phone. TanStack's loaders run in the browser as well as on the server, so they stay in this file: keep server-only work behind a server function or a dynamic import.
+
+See [route options](/docs/route-options) for how every router's work.
+
+## Rules
+
+See [rules](/docs/rules) for what each router can't take.

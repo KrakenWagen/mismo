@@ -1,0 +1,24 @@
+{
+  "name": "@mismo/example-shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "mismo's examples: the shared routes, in Expo Router's convention, for every example app.",
+  "exports": {
+    "./routes.config": "./routes.config.ts"
+  },
+  "dependencies": {
+    "@mismo/expo": "workspace:*",
+    "@mismo/next": "workspace:*",
+    "@mismo/react-router": "workspace:*",
+    "@mismo/tanstack": "workspace:*",
+    "@mismo/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "19.3.0"
+  }
+}

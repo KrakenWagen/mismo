@@ -1,0 +1,101 @@
+Shared screens navigate with `@mismo/core`, one API that runs on every router: Expo Router, Next.js, TanStack Start and React Router.
+
+```tsx
+import { BackLink, Link, Redirect, Slot, useNav, useParams, usePathname, useSearchParams } from "@mismo/core";
+```
+
+Code that only runs on one platform, such as a `.native.tsx` file or an app's own routes, can also use its router's API directly.
+
+## Where to go: `To`
+
+Everything that navigates takes a `To`: a route's pattern on its own, or the pattern with its params. Params are required exactly when the pattern has them:
+
+```tsx
+<Link to="/settings">Settings</Link>
+<Link to={{ href: "/orgs/[id]", params: { id: org.id } }}>{org.name}</Link>
+```
+
+Patterns match how you [defined the route](/docs/routes-folder#other-ways-to-define-routes): `/orgs/[id]` in an Expo Router folder, as here, or `/orgs/:id` in a React Router config. See [typed routes](/docs/typed-routes).
+
+## Link
+
+A link to a route. Its children can be anything: text, a row, an image. On native it's a pressable, so it can hold views.
+
+```tsx
+<Link to="/sign-up" replace label="Create an account">
+  <Row icon="user-plus">Sign up</Row>
+</Link>
+```
+
+| Prop | |
+| --- | --- |
+| `to` | Where it goes. |
+| `replace` | Replaces the current screen instead of adding one, for a sibling such as sign-in from sign-up. Back still leaves to what came before. |
+| `label` | The accessible name, when the content doesn't say where it goes. |
+
+## BackLink
+
+Goes back, or to `fallback` when there's nothing to go back to, such as a page opened from a shared URL:
+
+```tsx
+<BackLink fallback="/home" label="Back">
+  <ChevronLeft />
+</BackLink>
+```
+
+## Redirect
+
+Replaces the current screen as soon as it renders:
+
+```tsx
+if (!session) return <Redirect to="/sign-in" />;
+```
+
+## useNav
+
+Navigates from code:
+
+```tsx
+const nav = useNav();
+
+async function onSubmit() {
+  await save();
+  nav.go({ href: "/orgs/[id]", params: { id } });
+}
+```
+
+| | |
+| --- | --- |
+| `go(to)` | Adds a screen. |
+| `replace(to)` | Replaces the current screen. |
+| `back()` | Goes back one screen. |
+| `canGoBack()` | Whether there's a screen to go back to. |
+| `preload(to)` | Loads a page's code ahead, so navigating to it later shows it at once. Does nothing on native, where every page is already loaded. |
+
+## useParams
+
+The current route's params, typed by its pattern:
+
+```tsx
+const { id } = useParams("/orgs/[id]");
+```
+
+## usePathname and useSearchParams
+
+`usePathname()` is the current path, such as `/orgs/acme`. `useSearchParams()` is the query as an object of strings, such as a `token` from a link in an email:
+
+```tsx
+const { token } = useSearchParams();
+```
+
+## Slot
+
+Where a layout renders its child route. See [layouts](/docs/routes-folder#layouts).
+
+## pathOf
+
+The path a `To` gives, for when you need the string, such as to share a URL:
+
+```ts
+pathOf({ href: "/orgs/[id]", params: { id: "acme" } }); // "/orgs/acme"
+```

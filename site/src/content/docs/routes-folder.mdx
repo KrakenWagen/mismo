@@ -1,0 +1,121 @@
+You define your shared routes once. Most projects use a folder of files in Expo Router's format, which this page describes: if you've used Expo Router, there's nothing new to learn, and if you haven't, it's a small set of file names. You can also [use a React Router config, or your own format](#other-ways-to-define-routes).
+
+## Pages
+
+Each file is a page, and its default export is the screen. The file's path is its URL:
+
+| File | URL |
+| --- | --- |
+| `index.tsx` | `/` |
+| `sign-in.tsx` | `/sign-in` |
+| `settings/index.tsx` | `/settings` |
+| `settings/profile.tsx` | `/settings/profile` |
+
+## Params
+
+A name in brackets is a param, and matches any one segment:
+
+| File | URL | Params |
+| --- | --- | --- |
+| `orgs/[id].tsx` | `/orgs/acme` | `{ id: "acme" }` |
+| `orgs/[id]/members.tsx` | `/orgs/acme/members` | `{ id: "acme" }` |
+
+A screen reads them with `useParams`, by the route's pattern: `useParams("/orgs/[id]").id`.
+
+## Layouts
+
+A `_layout.tsx` wraps every route in its folder and below it. `Slot` renders the current child, on every router:
+
+```tsx title="routes/settings/_layout.tsx"
+import { Slot } from "@mismo/core";
+
+export default function SettingsLayout() {
+  return (
+    <SettingsShell>
+      <Slot />
+    </SettingsShell>
+  );
+}
+```
+
+A layout can differ per platform, like any other file. Often the native version uses Expo Router's own navigators:
+
+```tsx title="routes/settings/_layout.native.tsx"
+import { Stack } from "expo-router";
+
+export default function SettingsLayout() {
+  return <Stack />;
+}
+```
+
+## Groups
+
+A folder name in parentheses is a group. It isn't part of the URL, and it lets several routes share a layout without sharing a URL prefix:
+
+```text
+routes/
+├── (auth)/
+│   ├── _layout.tsx      centered card, no navigation
+│   ├── sign-in.tsx      /sign-in
+│   └── sign-up.tsx      /sign-up
+└── (app)/
+    ├── _layout.tsx      the app's shell
+    └── home.tsx         /home
+```
+
+A group without a layout only organizes files.
+
+## Files for one platform
+
+A platform suffix replaces a route's file on that platform, or makes a route exist on one platform only:
+
+| Suffix | Used by |
+| --- | --- |
+| `.web.tsx` | the web app |
+| `.native.tsx` | the native app, on iOS and Android |
+| `.ios.tsx`, `.android.tsx` | the native app, on that OS |
+
+Each app takes the most specific file for its platform (`.ios`, then `.native`, then the plain file) and never sees the others.
+
+```text
+routes/
+├── pricing.tsx           every app
+├── pricing.web.tsx       replaces pricing.tsx on the web
+├── billing.web.tsx       /billing exists on the web only
+└── scan.native.tsx       /scan exists on native only
+```
+
+A route with no file for a platform doesn't exist there. [Typed routes](/docs/typed-routes) keep shared screens from linking to it.
+
+<Callout>
+Expo Router on its own requires a plain file next to every platform file. Here you don't need one: `billing.web.tsx` alone is fine.
+</Callout>
+
+## Server files
+
+A file named after a route with `.server` (`orgs/[id].server.ts`) holds that route's server code for the web routers, such as a React Router loader or Next.js's `generateMetadata`. It isn't a route, and the native app never bundles it. See [route options](/docs/route-options).
+
+## The root layout
+
+The shared folder has no root `_layout.tsx`. Each app owns its root (the HTML document on the web, the providers and navigator on native), next to its own routes. Put what the roots share in a component the shared package exports.
+
+## Not supported yet
+
+An Expo Router folder can't hold these yet, and the build stops with an error naming the file:
+
+- **Catch-all routes**, `[...rest].tsx`.
+- **`+` routes**, such as `+not-found.tsx` and `+api.ts`.
+
+You can still have them: keep them in each app's own routes folder, next to the shared routes.
+
+## Other ways to define routes
+
+The folder format is one option, set by `input` in your [config](/docs/configuration#defineroutes):
+
+| Format | `input` | Routes look like |
+| --- | --- | --- |
+| A folder in Expo Router's format | `expo.input()` | `/orgs/[id]` |
+| [A React Router config](/docs/react-router#define-shared-routes-with-a-config) | `reactRouter.input()` | `/orgs/:id` |
+| [Your own](/docs/adapters#routeinput) | Your adapter's | Yours |
+
+The format only decides how you write the routes. Whichever you pick, every app can run them, on any router. Platform files and server files work the same in each.

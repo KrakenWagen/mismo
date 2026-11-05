@@ -1,0 +1,97 @@
+<Install packages="@mismo/react-router" />
+
+`@mismo/react-router` runs your shared screens and routes in a React Router app, in framework mode. It supports React Router `>=8 <9`.
+
+## Run shared routes
+
+Add mismo's Vite plugin before React Router's:
+
+```ts title="vite.config.ts"
+import { reactRouter } from "@react-router/dev/vite";
+import { reactRouter as mismoReactRouter } from "@mismo/react-router";
+import { mismo } from "@mismo/core/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [
+    mismo({
+      config: "../../packages/app/routes.config.ts",
+      output: mismoReactRouter.output({ outDir: "app/mismo", types: "app/routes.gen.ts" }),
+    }),
+    reactRouter(),
+  ],
+  // Shared screens are source code in another package: the server build needs to bundle them.
+  ssr: { noExternal: ["@acme/app", "@mismo/core", "@mismo/react-router"] },
+});
+```
+
+Then spread the shared routes into the app's own config, next to its own routes:
+
+```ts title="app/routes.ts"
+import { type RouteConfig, route } from "@react-router/dev/routes";
+
+import { routes } from "./mismo/routes";
+
+export default [...routes, route("status", "status.tsx")] satisfies RouteConfig;
+```
+
+## Define shared routes with a config
+
+You can write the shared routes as a React Router config instead of an Expo Router folder: a `routes.ts` whose default export is a route list, made with `route()`, `index()` and `layout()`. Every router can still run them.
+
+```ts title="routes.config.ts"
+import { reactRouter } from "@mismo/react-router";
+
+export default defineRoutes({
+  source: "./routes.ts",
+  input: reactRouter.input(),
+  validFor: [reactRouter, expo],
+});
+```
+
+Files are relative to `routes.ts`. Platform files work as in a folder: beside `about.tsx`, an `about.native.tsx` replaces it on native, and a route whose only file is `about.web.tsx` is on the web alone. If a platform has no file for a layout, its routes move up to the parent there.
+
+Your links and params then use React Router's syntax, such as `/orgs/:id`.
+
+<Callout kind="warning">
+Splats (`*`) and optional segments (`:lang?`) aren't supported yet.
+</Callout>
+
+## Route options
+
+React Router's route exports come from two places, by where they run:
+
+```tsx title="routes/orgs/[id].tsx"
+import type { ReactRouterRouteOptions } from "@mismo/react-router";
+
+import type { reactRouter as server } from "./[id].server";
+
+export const reactRouter = {
+  meta: ({ loaderData }) => [{ title: loaderData?.title }],
+  handle: { crumb: "Organization" },
+} satisfies ReactRouterRouteOptions<typeof server>;
+```
+
+```ts title="routes/orgs/[id].server.ts"
+import type { ReactRouterServerOptions } from "@mismo/react-router";
+
+export const reactRouter = {
+  async loader({ params }) {
+    return { title: `Organization ${params.id}` };
+  },
+} satisfies ReactRouterServerOptions;
+```
+
+| In the route's module | In its server file |
+| --- | --- |
+| `meta`, `links`, `handle`, `clientLoader`, `clientAction`, `ErrorBoundary`, `HydrateFallback`, `shouldRevalidate` | `loader`, `action`, `headers`, `middleware` |
+
+React Router reads each as it would from its own route module, and its build keeps the server ones out of the browser. A `loader` in the route's file would ship to the phone, so the build stops and says to move it.
+
+`ReactRouterRouteOptions<typeof server>` types `meta`'s `loaderData` from the loader in the server file: here `{ title: string }`. `import type` disappears from the built code, so the native app still never bundles the server file.
+
+A shared screen can't call `useLoaderData`, since it runs on native too. Read a loader's data in `meta`, or in a web-only version of the screen (`orgs/[id].web.tsx`). See [route options](/docs/route-options).
+
+## Rules
+
+See [rules](/docs/rules) for what each router can't take.

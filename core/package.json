@@ -1,0 +1,88 @@
+{
+  "name": "@mismo/core",
+  "version": "0.1.0-beta.1",
+  "description": "Share screens, routes and navigation between a React Native app and a web app, each on its own router.",
+  "keywords": [
+    "react",
+    "react-native",
+    "expo",
+    "router",
+    "routes",
+    "navigation",
+    "cross-platform",
+    "universal"
+  ],
+  "homepage": "https://mismo.dev",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/runtime/index.ts",
+    "./config": "./src/config/index.ts",
+    "./adapter": "./src/adapter/index.ts",
+    "./generate": "./src/generate/index.ts",
+    "./vite": "./src/integrations/vite.ts",
+    "./contract": "./src/runtime/contract.ts"
+  },
+  "bin": {
+    "mismo": "./src/integrations/cli.ts"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../scripts/fix-declarations.mjs dist",
+    "prepack": "pnpm run build"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "vite": ">=8"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "19.3.0",
+    "vite": "^8.3.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/runtime/index.d.ts",
+        "default": "./dist/runtime/index.js"
+      },
+      "./config": {
+        "types": "./dist/config/index.d.ts",
+        "default": "./dist/config/index.js"
+      },
+      "./adapter": {
+        "types": "./dist/adapter/index.d.ts",
+        "default": "./dist/adapter/index.js"
+      },
+      "./generate": {
+        "types": "./dist/generate/index.d.ts",
+        "default": "./dist/generate/index.js"
+      },
+      "./vite": {
+        "types": "./dist/integrations/vite.d.ts",
+        "default": "./dist/integrations/vite.js"
+      },
+      "./contract": {
+        "types": "./dist/runtime/contract.d.ts",
+        "default": "./dist/runtime/contract.js"
+      }
+    },
+    "bin": {
+      "mismo": "./dist/integrations/cli.js"
+    }
+  }
+}

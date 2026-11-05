@@ -1,0 +1,57 @@
+{
+  "name": "@mismo/react-router",
+  "version": "0.1.0-beta.1",
+  "description": "mismo for React Router (framework mode): run shared screens and routes in a React Router app.",
+  "keywords": [
+    "mismo",
+    "react-router",
+    "remix",
+    "routes"
+  ],
+  "homepage": "https://mismo.dev",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./runtime": "./src/runtime.tsx"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../scripts/fix-declarations.mjs dist",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "@mismo/core": "workspace:^"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-router": ">=8 <9"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^8.5.1",
+    "@types/react": "^19.3.0",
+    "react": "19.3.0",
+    "react-router": "^8.5.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./runtime": {
+        "types": "./dist/runtime.d.ts",
+        "default": "./dist/runtime.js"
+      }
+    }
+  }
+}

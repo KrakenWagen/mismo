@@ -1,0 +1,241 @@
+This guide sets up a common layout: a shared package that holds the screens and the routes, a web app, and an Expo native app, in one workspace. Other layouts work too, as long as each app can reach the shared config.
+
+```text
+packages/app/        the screens and routes.config.ts
+apps/web/            Next.js, TanStack Start or React Router
+apps/native/         Expo Router
+```
+
+## Requirements
+
+- **Node.js 22.18 or later** (24 recommended), which loads `routes.config.ts` directly, with no build step.
+- **React 19**, in every app.
+- **TypeScript**, to get the typed routes.
+
+## Define the routes
+
+Install `@mismo/core` in the shared package, plus the adapter of every router your apps use, so it can check their [rules](/docs/rules):
+
+<Install packages="@mismo/core @mismo/expo @mismo/next" title="packages/app" />
+
+This guide defines the routes as a folder in Expo Router's format, even for apps that don't run Expo Router. You can [use a React Router config instead](/docs/routes-folder#other-ways-to-define-routes). A config next to it says how the routes are written and which routers they're for:
+
+```ts title="packages/app/routes.config.ts"
+import { expo } from "@mismo/expo";
+import { next } from "@mismo/next";
+import { defineRoutes } from "@mismo/core/config";
+
+export default defineRoutes({
+  source: "./routes",
+  // How the routes are written: here, a folder in Expo Router's format.
+  input: expo.input(),
+  // The routers your apps use: every app's build checks all of their rules.
+  validFor: [next, expo],
+  // Types for the shared package's own screens.
+  types: { shared: "./src/routes.gen.ts" },
+});
+```
+
+On TanStack Start or React Router, install and list `@mismo/tanstack` (`tanstack`) or `@mismo/react-router` (`reactRouter`) instead of Next.js.
+
+The config knows nothing about the apps. Each app reads it and writes its own routes, so adding an app never changes this file.
+
+## Write a screen
+
+A route file's default export is its screen. It imports everything about navigation from `@mismo/core`:
+
+```tsx title="packages/app/routes/orgs/[id].tsx"
+import { Link, useParams } from "@mismo/core";
+
+export default function Org() {
+  const { id } = useParams("/orgs/[id]");
+
+  return (
+    <main>
+      <h1>Organization {id}</h1>
+      <Link to="/">All organizations</Link>
+    </main>
+  );
+}
+```
+
+See [defining routes](/docs/routes-folder) for layouts, groups, and files for one platform.
+
+A route can also set each router's own options beside the screen, such as a page title or caching, and keep server code such as a loader in a file beside it (`orgs/[id].server.ts`) that the native app never bundles. See [route options](/docs/route-options).
+
+## The web app
+
+<Tabs>
+<Tab label="Next.js">
+
+<Install packages="@mismo/core @mismo/next" title="apps/web" />
+
+Wrap the app's config with `withMismo`. It writes the routes into `app/` and keeps them up to date in dev:
+
+```ts title="apps/web/next.config.ts"
+import { withMismo } from "@mismo/next/config";
+import type { NextConfig } from "next";
+
+const config: NextConfig = {
+  // The shared screens are TypeScript source in another package.
+  transpilePackages: ["@acme/app", "@mismo/core", "@mismo/next"],
+};
+
+export default withMismo(config, {
+  config: "../../packages/app/routes.config.ts",
+  outDir: "app",
+  types: "app/routes.gen.ts",
+});
+```
+
+Next.js needs a root layout, and it's the app's own: keep `app/layout.tsx`, with `<html>` and `<body>`, next to the generated routes.
+
+A typecheck needs the generated files before `tsc` runs:
+
+```json title="apps/web/package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/next --out app --types app/routes.gen.ts && tsc"
+  }
+}
+```
+
+</Tab>
+<Tab label="TanStack Start">
+
+<Install packages="@mismo/core @mismo/tanstack" title="apps/web" />
+
+Add mismo's Vite plugin before TanStack Start's. It writes the routes into `src/routes` and keeps them up to date in dev:
+
+```ts title="apps/web/vite.config.ts"
+import { tanstack } from "@mismo/tanstack";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import react from "@vitejs/plugin-react";
+import { mismo } from "@mismo/core/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [
+    mismo({
+      config: "../../packages/app/routes.config.ts",
+      output: tanstack.output({ outDir: "src/routes", types: "src/routes.gen.ts" }),
+    }),
+    tanstackStart(),
+    react(),
+  ],
+  // Bundle the shared screens' source, and mismo with it.
+  ssr: { noExternal: ["@acme/app", "@mismo/core", "@mismo/tanstack"] },
+});
+```
+
+The app's own root route (`src/routes/__root.tsx`) stays in `src/routes`, next to the generated ones.
+
+A typecheck needs the generated files, then TanStack's route tree, before `tsc` runs:
+
+```json title="apps/web/package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/tanstack --out src/routes --types src/routes.gen.ts && tsr generate && tsc"
+  }
+}
+```
+
+</Tab>
+<Tab label="React Router">
+
+<Install packages="@mismo/core @mismo/react-router" title="apps/web" />
+
+Add mismo's Vite plugin before React Router's. It writes the routes into `app/mismo`:
+
+```ts title="apps/web/vite.config.ts"
+import { reactRouter } from "@react-router/dev/vite";
+import { reactRouter as mismoReactRouter } from "@mismo/react-router";
+import { mismo } from "@mismo/core/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [
+    mismo({
+      config: "../../packages/app/routes.config.ts",
+      output: mismoReactRouter.output({ outDir: "app/mismo", types: "app/routes.gen.ts" }),
+    }),
+    reactRouter(),
+  ],
+  // Bundle the shared screens' source, and mismo with it.
+  ssr: { noExternal: ["@acme/app", "@mismo/core", "@mismo/react-router"] },
+});
+```
+
+Then spread the shared routes into the app's own config:
+
+```ts title="apps/web/app/routes.ts"
+import { type RouteConfig } from "@react-router/dev/routes";
+
+import { routes } from "./mismo/routes";
+
+export default [...routes] satisfies RouteConfig;
+```
+
+A typecheck needs the generated files, then React Router's types, before `tsc` runs:
+
+```json title="apps/web/package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/react-router --out app/mismo --types app/routes.gen.ts && react-router typegen && tsc"
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## The native app
+
+<Install packages="@mismo/core @mismo/expo" title="apps/native" />
+
+Wrap Metro's config with `withMismo`. Metro loads its config whenever it starts, for `expo start` and `expo export` alike, so the routes exist before Expo Router looks for them:
+
+```js title="apps/native/metro.config.js"
+const { getDefaultConfig } = require("expo/metro-config");
+const { withMismo } = require("@mismo/expo/metro");
+
+module.exports = withMismo(getDefaultConfig(__dirname), {
+  config: "../../packages/app/routes.config.ts",
+  outDir: "src/app",
+  types: "src/routes.gen.ts",
+  cwd: __dirname,
+});
+```
+
+The app's root `_layout.tsx` stays in `src/app`. For a typecheck, generate first:
+
+```json title="apps/native/package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/expo --out src/app --types src/routes.gen.ts && tsc"
+  }
+}
+```
+
+## Generated files
+
+Builds write the routes for you, so they aren't committed:
+
+- **Route files** start with a `// Generated by mismo` line, and git skips them without any setup. When a route is deleted from the shared folder, its generated file goes too.
+- **Types files** (`routes.gen.ts`, and the shared package's `routes.web.gen.ts` and `routes.native.gen.ts`) are yours to ignore. Add them to the project's `.gitignore`:
+
+```text title=".gitignore"
+**/routes*.gen.ts
+```
+
+Your own route files in the same folder are never touched. If one sits where a generated file would go, the build stops and names both, rather than overwriting it.
+
+## In an existing app
+
+Each app's own routes sit next to the shared ones, so you can move one screen at a time:
+
+1. Move the screen into the shared routes folder, as `routes/<path>.tsx`, and swap its router imports (`Link`, `useRouter`, `useParams`) for `@mismo/core`'s.
+2. Delete the app's own route file for it. The next build writes the generated one in its place.
+3. Repeat for the next screen. Routes the shared folder doesn't have yet keep working as before.
+
+Next: [defining routes](/docs/routes-folder).

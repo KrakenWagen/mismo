@@ -1,0 +1,41 @@
+The routers don't all support the same things. Expo Router allows two pages at one URL, in different groups; the web routers don't. A route that's fine for one router can be impossible for another.
+
+## Every build checks every router
+
+Each app builds with one router. If each router's limits were only checked by its own app, a problem would surface late, in an app nobody was working on. A native developer adds `(a)/about` next to `(b)/about`, Expo Router accepts it, and the web build breaks later.
+
+So the config lists every router the routes must stay valid for, and **every app's build checks all of their rules**:
+
+```ts title="packages/app/routes.config.ts"
+export default defineRoutes({
+  source: "./routes",
+  input: expo.input(),
+  validFor: [tanstack, expo],
+});
+```
+
+Now the native build fails too, with the route, the URL, and the router that can't take it:
+
+```text
+The routes do not fit every router they are for:
+  (b)/about: /about is also (a)/about, and TanStack Start allows one page per URL.
+```
+
+Problems from every router are collected and reported together, before anything is written. A failed build leaves the last good routes in place.
+
+An app's own router is always checked, whether it's listed or not. A router that isn't listed adds no limits: a project that only targets Expo Router can use everything Expo Router allows.
+
+## What each router can take
+
+| | Expo Router | Next.js | TanStack Start | React Router |
+| --- | --- | --- | --- | --- |
+| Pages, params, layouts, index, groups | ✓ | ✓ | ✓ | ✓ |
+| Two pages at one URL, in different groups | ✓ | – | – | – |
+| `.` or `$` in a file or folder name | ✓ | ✓ | – | ✓ |
+| A name starting with `_` or `@`, or a group starting with `(.` | ✓ | – | ✓ | ✓ |
+
+Where a router would quietly treat a name as something else, such as `.` as a path separator on TanStack Start or `_` as a private folder on Next.js, mismo stops the build instead of letting the route change meaning.
+
+## Limits of the format
+
+Some limits come from how you define the routes, not from a router: an Expo Router folder can't hold [catch-all or `+` routes yet](/docs/routes-folder#not-supported-yet), and a React Router config can't use [splats or optional segments yet](/docs/react-router#define-shared-routes-with-a-config). These fail every build too, with an error naming the file.

@@ -1,0 +1,18 @@
+{
+  "name": "@mismo/tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "mismo's tests across adapters: an input and an output together.",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@mismo/expo": "workspace:*",
+    "@mismo/next": "workspace:*",
+    "@mismo/react-router": "workspace:*",
+    "@mismo/tanstack": "workspace:*",
+    "@mismo/core": "workspace:*"
+  }
+}

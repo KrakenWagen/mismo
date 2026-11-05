@@ -1,0 +1,14 @@
+// The site on Cloudflare: its prerendered pages, served as static files, at mismo.dev.
+//   pnpm run deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mismo",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist/client",
+    // `/docs/introduction` and `/docs/introduction/` both serve docs/introduction/index.html.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "mismo.dev", "custom_domain": true }]
+}

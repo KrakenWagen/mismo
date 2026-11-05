@@ -1,0 +1,139 @@
+An adapter adds a router, or a new way to define routes. The built-in adapters use the same interfaces yours will, all exported from `@mismo/core/adapter`. An adapter is one object: the router's rules, and an input (to define routes), an output (to run them), or both.
+
+```ts
+import type { RouterAdapter } from "@mismo/core/adapter";
+
+export const myRouter = {
+  name: "My Router",
+  rules,
+  input,
+  output,
+} satisfies RouterAdapter;
+```
+
+A config names adapters in `validFor`, and the CLI's `--adapter` loads a package with one adapter in it.
+
+## The shared model
+
+Inputs produce and outputs consume a tree of `SharedRoute`s. It's based on React Router's `RouteConfigEntry`, extended with what that has no place for:
+
+```ts
+interface SharedRoute {
+  /** The route's file in the routes folder, without extension: `(app)/orgs/[id]`. */
+  id: string;
+  /** The URL pattern below the parent, `:param` syntax, groups left out. None for a group's layout. */
+  path?: string;
+  /** The page at its parent's own URL. */
+  index?: boolean;
+  /** A layout: it renders the routes below it. */
+  layout?: boolean;
+  /** The module this target imports, absolute. */
+  file: string;
+  /** The folders and name below the parent's folder, for outputs that rebuild a folder: ["orgs", ":id"]. */
+  segments: string[];
+  children?: SharedRoute[];
+}
+```
+
+Segments are spelled the same whatever the input: `orgs` (static), `:id` (a param), `(app)` (a group), and `index`. Each output translates them: `[id]` for Expo Router, `$id` for TanStack.
+
+An input reads the tree one target has (`"web"`, `"native"` or `"shared"`), with platform files already resolved, so an output never sees another platform's files.
+
+## RouteInput
+
+Reads routes written in a format of your choice into the shared model. If the format is a router's, using that router's own parser keeps the meaning exact, as the Expo Router input does:
+
+```ts
+interface RouteInput {
+  name: string;
+  /** The routes `target` has in `source`. */
+  read(source: string, target: "web" | "native" | "shared"): SharedRoute[];
+  /** A param as this convention writes it, for the typed routes: `[id]` for Expo Router. */
+  param(name: string): string;
+}
+```
+
+`read` is synchronous: Metro reads its config without waiting. `routeFiles` and `moduleFor` from `@mismo/core/adapter` find a folder's routes and apply the platform-file rule, so every input handles platforms the same way.
+
+## RouteOutput
+
+Writes one app's routes for its router:
+
+```ts
+interface RouteOutput {
+  name: string;
+  /** The routes it takes: those its platform has. */
+  target: "web" | "native";
+  /** The router's routes folder, and the app's types file, relative to the app. */
+  outDir: string;
+  types: string;
+  rules: RouteRules;
+  /** The module that implements the runtime on this router: "@my/router/runtime". */
+  runtime: string;
+  /** The files to write, by path relative to outDir. */
+  emit(routes: SharedRoute[], context: { outDir: string }): Map<string, string>;
+}
+```
+
+Start every file with `GENERATED`. mismo only replaces or removes files that begin with it, so the app's own files in the same folder are safe. Files that haven't changed aren't rewritten, so the router's watcher doesn't rebuild for nothing. Use `importPath` to build the import from a generated file to its module.
+
+## RouteRules
+
+What the router can't express, checked on the routes its platform has:
+
+```ts
+interface RouteRules {
+  /** For messages: "TanStack Start". */
+  router: string;
+  target: "web" | "native";
+  /** One message per problem, starting with the route's id. None when the routes fit. */
+  check(routes: readonly SharedRoute[]): string[];
+}
+```
+
+`oneUrlPerPage(routes, router)` is the common rule, for routers that allow one page per URL.
+
+## Route options
+
+A router's per-route options are an export of the shared route, under the router's name: `export const tanstack = { … }` in the route's module, or in its server file (`orgs/[id].server.ts`) for options that run on the server. Your adapter picks the name, exports a type for the object, and reads it in its output with these, from `@mismo/core/adapter`:
+
+| | |
+| --- | --- |
+| `exportsName(module, name)` | Whether the route's module exports `name`, read from its source. |
+| `exportedOptions(module, name)` | The properties of `export const name = { … }`, each with its value's source text, so the output can pass them on one by one or copy literals. Throws a clear error if the object isn't written out. |
+| `serverModule(module)` | The route's server file, or none. Platform files share one. |
+| `isPlainValue(text)` | Whether an option's value is plain data that stands on its own (`{ title: "Settings" }`, `60`), so it can be copied as text into a generated file instead of imported. |
+
+Pass `route.file` as `module`. An output that spreads the whole object into one call, as TanStack's does, only needs `exportsName`. One that writes an export per option, as React Router's and Next.js's do, reads the keys with `exportedOptions` and rejects the ones its router doesn't have:
+
+```ts title="output.ts"
+const server = serverModule(route.file);
+const options = server ? exportedOptions(server, "myRouter") : undefined;
+for (const [key, value] of options ?? []) {
+  if (!KNOWN.has(key)) throw new Error(`${route.id}: \`myRouter.${key}\` isn't a My Router option.`);
+  lines.push(`export const ${key} = myRouter.${key};`);
+}
+```
+
+```ts title="index.ts"
+/** My Router's options for a shared route, exported as `myRouter`. */
+export type MyRouterRouteOptions = { title?: string; prefetch?: boolean };
+```
+
+Inputs skip server files when they read the routes folder (`routeFiles` does), so they never become routes.
+
+## The runtime
+
+The output's `runtime` names a module that implements the API screens import: `Link`, `BackLink`, `Redirect`, `Slot`, `useNav`, `usePathname`, `useParams` and `useSearchParams`, with the types from `@mismo/core/contract`. The app's build points `@mismo/core` at that module, so the module itself imports from `@mismo/core/contract`, never from `@mismo/core`.
+
+```tsx title="runtime.tsx"
+import { type LinkProps, pathOf } from "@mismo/core/contract";
+
+export { pathOf, type LinkProps } from "@mismo/core/contract";
+
+export function Link({ to, replace, label, children }: LinkProps) {
+  return <RouterLink href={pathOf(to)} replace={replace} aria-label={label}>{children}</RouterLink>;
+}
+```
+
+`pathOf` turns a `To` into a path, and fails clearly when a param is missing.

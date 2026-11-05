@@ -1,0 +1,23 @@
+{
+  "name": "mismo",
+  "private": true,
+  "packageManager": "pnpm@10.34.7",
+  "engines": {
+    "node": ">=22.18",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @mismo/site dev",
+    "build": "pnpm -r --filter \"./{core,expo,tanstack,next,react-router}\" run build",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "pnpm --filter @mismo/tests test",
+    "site:build": "pnpm --filter @mismo/site build",
+    "site:deploy": "pnpm --filter @mismo/site run deploy",
+    "release": "pnpm -r --filter \"./{core,expo,tanstack,next,react-router}\" publish --tag beta"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,81 @@
+Each router has its own per-route settings: page titles and metadata, loaders, caching, server rendering. A shared route sets them for each router by name, next to the screen, and each app's build passes on its own router's and ignores the rest.
+
+## Two places, by where they run
+
+**Everything that can ship to every platform** goes in the route's module, exported under the router's name: options that run in the browser, and plain values such as a page title.
+
+```tsx title="routes/orgs/[id].tsx"
+import type { NextRouteOptions } from "@mismo/next";
+import type { ReactRouterRouteOptions } from "@mismo/react-router";
+import type { TanstackRouteOptions } from "@mismo/tanstack";
+
+export default function Org() {
+  // …
+}
+
+export const tanstack = { ssr: false } satisfies TanstackRouteOptions;
+
+export const next = { revalidate: 3600 } satisfies NextRouteOptions;
+
+export const reactRouter = {
+  meta: () => [{ title: "Organization" }],
+} satisfies ReactRouterRouteOptions;
+```
+
+**Code that runs on the server** goes in the route's server file, beside it, under the same names:
+
+```ts title="routes/orgs/[id].server.ts"
+import type { NextServerOptions } from "@mismo/next";
+import type { ReactRouterServerOptions } from "@mismo/react-router";
+
+export const next = {
+  async generateMetadata({ params }) {
+    const { id } = await params;
+    return { title: `Organization ${id}` };
+  },
+} satisfies NextServerOptions;
+
+export const reactRouter = {
+  async loader({ params }) {
+    return getOrg(params.id);
+  },
+} satisfies ReactRouterServerOptions;
+```
+
+The native app bundles the route's module, so anything there ships to the phone. The server file is imported only by the web app's generated files: the native app never sees it, and it isn't a route of its own. Server code (database clients, secrets, loaders) belongs there.
+
+## What each router takes
+
+| Router | In the route's module | In its server file | Types |
+| --- | --- | --- | --- |
+| [TanStack Start](/docs/tanstack-start#route-options) | `tanstack`: any route option (`ssr`, `head`, `beforeLoad`, `loader`, …) | — | `TanstackRouteOptions` |
+| [React Router](/docs/react-router#route-options) | `reactRouter`: `meta`, `links`, `handle`, `clientLoader`, `clientAction`, `ErrorBoundary`, `HydrateFallback`, `shouldRevalidate` | `reactRouter`: `loader`, `action`, `headers`, `middleware` | `ReactRouterRouteOptions`, `ReactRouterServerOptions` |
+| [Next.js](/docs/nextjs#route-options) | `next`: plain values only: `metadata`, `viewport`, and the segment config (`dynamic`, `revalidate`, …) | `next`: `generateMetadata`, `generateViewport`, `generateStaticParams`, and any value that needs code | `NextRouteOptions`, `NextServerOptions` |
+| [Expo Router](/docs/expo-router#route-exports) | Its own exports, as in any Expo Router route: `unstable_settings`, `ErrorBoundary`, … | — | Expo Router's |
+
+TanStack Start's loaders run in the browser too, so its options all stay in the route's file. Next.js only reads options on the server, which is why its values beside the screen must be plain data.
+
+## Writing options
+
+- **Write each object out.** `export const next = { revalidate: 60 }`, not `export const next = makeOptions()` or `{ ...base }`: mismo reads them without running your code.
+- **Next.js values in the module are plain data.** `metadata: { title: "Settings" }`, `revalidate: 60`: mismo copies them as written, so they can't name anything else in the file. A value that needs code, such as a title built from a variable, goes in the server file, or becomes `generateMetadata` there.
+- **One place per option.** An option set in both the module and the server file is an error. Next.js also takes either `metadata` or `generateMetadata` for a route, not both: a fixed title can be plain `metadata` in the module, and a title built from the route's params is `generateMetadata` in the server file.
+- **A misplaced option is an error.** A React Router `loader` in the route's module would ship to the phone, so the build stops and says to move it to the server file. An option a router doesn't have is an error too.
+
+## Typing options from the server file
+
+An option that reads a loader's data, such as React Router's `meta`, gets its type from the server file with a type-only import:
+
+```tsx title="routes/orgs/[id].tsx"
+import type { reactRouter as server } from "./[id].server";
+
+export const reactRouter = {
+  meta: ({ loaderData }) => [{ title: loaderData?.title }], // typed from the loader
+} satisfies ReactRouterRouteOptions<typeof server>;
+```
+
+`import type` disappears from the built code, so the screen file borrows the server file's types without the native app ever bundling it.
+
+## Reading the data in a screen
+
+A shared screen runs on every platform, so it can't call one router's data hooks. Use a loader's data where that router reads it: in its own options (`meta` gets `loaderData` on React Router), or in a web-only version of the screen (`orgs/[id].web.tsx`), which can use `useLoaderData` from the web router.

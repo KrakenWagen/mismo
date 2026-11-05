@@ -1,0 +1,92 @@
+<Install packages="@mismo/core @mismo/next" />
+
+`@mismo/next` runs your shared screens and routes in a Next.js app, on the App Router. It supports Next.js `>=16 <17`.
+
+```ts
+import { next } from "@mismo/next";
+```
+
+## next.config
+
+Wrap the app's config with `withMismo`. It writes the routes for `next dev` and `next build` alike, keeps them up to date in dev, and works with Turbopack and webpack:
+
+```ts title="next.config.ts"
+import { withMismo } from "@mismo/next/config";
+import type { NextConfig } from "next";
+
+const config: NextConfig = {
+  // The shared screens are TypeScript source in another package, and @mismo/core with them.
+  transpilePackages: ["@acme/app", "@mismo/core", "@mismo/next"],
+};
+
+export default withMismo(config, {
+  config: "../../packages/app/routes.config.ts",
+  outDir: "app",
+  types: "app/routes.gen.ts",
+});
+```
+
+| Option | |
+| --- | --- |
+| `config` | The shared `routes.config.ts`, relative to the app. |
+| `outDir` | The App Router's folder: `app` or `src/app`. |
+| `types` | The app's types file. |
+| `cwd` | The app's folder. Defaults to `process.cwd()`, where Next.js loads its config. |
+
+## In your app folder
+
+The shared routes appear in `app/`, next to the app's own. Each page is a `page.tsx` and a `mismo-page.tsx`, and each layout a `layout.tsx` and a `mismo-layout.tsx`. They're generated, so there's nothing to edit.
+
+The root `app/layout.tsx` stays yours. Next.js requires one, with `<html>` and `<body>`:
+
+```tsx title="app/layout.tsx"
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### Server and client
+
+Shared screens are client components: they also run on the phone, with hooks and React Native's components, so they can't be server components. Next.js still renders them on the server for the first load, as it does every client component. Metadata, static params, caching and rendering config still work: the generated `page.tsx` is a server component that carries them. See [route options](#route-options).
+
+## Route options
+
+Options come from two places:
+
+```tsx title="routes/orgs/[id].tsx"
+import type { NextRouteOptions } from "@mismo/next";
+
+// Plain values: copied into the generated server page as written.
+export const next = { revalidate: 3600 } satisfies NextRouteOptions;
+```
+
+```ts title="routes/orgs/[id].server.ts"
+import type { NextServerOptions } from "@mismo/next";
+
+// Code: runs on the server, imported by the generated server page.
+export const next = {
+  async generateStaticParams() {
+    return [{ id: "acme" }];
+  },
+  async generateMetadata({ params }) {
+    const { id } = await params;
+    return { title: `Organization ${id}` };
+  },
+} satisfies NextServerOptions;
+```
+
+| Option | In the route's module | In its server file |
+| --- | --- | --- |
+| `metadata`, `viewport` | As plain data | Any value |
+| `generateMetadata`, `generateViewport`, `generateStaticParams` | — | ✓ |
+| `dynamic`, `dynamicParams`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration` | As literals | As literals |
+
+An option set in both places is an error. See [route options](/docs/route-options) for how every router's work.
+
+## Rules
+
+See [rules](/docs/rules) for what each router can't take.

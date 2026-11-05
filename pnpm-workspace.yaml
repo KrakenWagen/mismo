@@ -1,0 +1,21 @@
+packages:
+  - "core"
+  - "expo"
+  - "next"
+  - "react-router"
+  - "tanstack"
+  - "tests"
+  - "site"
+  - "examples/*"
+
+# One copy of React for the whole workspace: a second copy makes hooks see a null dispatcher.
+# Babel stays on 7: Expo does not take 8.
+overrides:
+  "@babel/core": 7.29.7
+  react: 19.3.0
+  react-dom: 19.3.0
+
+# Install scripts these need: wrangler's bundler and local runtime.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd

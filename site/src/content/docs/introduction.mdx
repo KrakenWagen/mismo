@@ -1,0 +1,51 @@
+Teams with a React Native app and a web app already share a lot: components, hooks, data fetching, design tokens. What they usually can't share is the **screen** itself. Each app defines the screen's route in its own router's format, links to it with its own router's `Link`, and wires navigation into the shared code by hand. The shared part ends up being "everything inside the screen", and keeping the two apps' routes in step is a manual chore.
+
+mismo lets you write the whole screen once: the screen, the route it lives at, its layout, and every link and navigation call in it. Your native app runs it on Expo Router; your web app runs it on Next.js, TanStack Start or React Router.
+
+```tsx title="packages/app/routes/orgs/[id].tsx"
+import { Link, useParams } from "@mismo/core";
+
+export default function Org() {
+  const { id } = useParams("/orgs/[id]");
+  const org = useOrg(id);
+
+  return (
+    <Screen title={org.name}>
+      {org.members.map((person) => (
+        <Link key={person.id} to={{ href: "/people/[id]", params: person }}>
+          <PersonRow person={person} />
+        </Link>
+      ))}
+    </Screen>
+  );
+}
+```
+
+That file is the screen and its route (`/orgs/:id`). Both apps have it, and its links work in both.
+
+## What you share
+
+- **Screens and layouts.** Written once, in a shared package.
+- **Routes.** Defined once for every app: as a folder of files in Expo Router's format, as a React Router config, or your own way. See [defining routes](/docs/routes-folder).
+- **Navigation.** `Link`, `useNav`, `Redirect`, `BackLink`, `useParams` and the rest come from `@mismo/core`, one API on every router. See [navigation](/docs/navigation).
+- **Typed links.** Every link is checked against the routes, and a shared screen can only link to routes every app has. See [typed routes](/docs/typed-routes).
+
+## What you keep
+
+- **Each app's own framework.** The web app is a normal Next.js, TanStack Start or React Router app, with its server rendering, data loading and deploy setup. The native app is a normal Expo Router app, with native stacks and tabs.
+- **Each router's own features.** A shared route can set metadata, loaders, caching and the rest for each router by name, and keep server code in a file the native app never bundles. See [route options](/docs/route-options).
+- **Platform differences.** A screen can have a `.web.tsx` or `.native.tsx` version, or exist on one platform only. Each app's own routes sit next to the shared ones.
+- **Ordinary route files.** Each app gets normal route files for its router, next to its own routes, so you can still add routes that only one app has.
+
+## How it works
+
+1. **You define the routes once**, in a shared package.
+2. **Each app's build adds them to its router**, next to the app's own routes. It takes one line: a Vite plugin, or a wrapper for `next.config` or Metro's config.
+3. **Your screens' navigation runs on each app's router**, so a `Link` in a shared screen is a Next.js link on the web and an Expo Router link on the phone.
+4. **Every build checks every router's limits.** A route the web can't take fails the native build too, so you find out where you made it. See [rules](/docs/rules).
+
+<Callout kind="warning">
+mismo is in beta (`0.1.0-beta.1`), and its APIs can still change before 1.0.
+</Callout>
+
+Next, [set up a shared package and two apps](/docs/getting-started).

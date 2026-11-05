@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+build/
+.output/
+.next/
+.nitro/
+.tanstack/
+.react-router/
+*.tsbuildinfo
+next-env.d.ts
+
+# Wrangler's local state and local secrets
+.wrangler/
+.dev.vars
+
+# Expo's local cache
+.expo/
+expo-env.d.ts
+
+# Route types written by mismo. The generated route files list themselves in a .gitignore in each
+# routes folder.
+**/routes*.gen.ts
+
+# OS and editor
+.DS_Store
+.env
+.env.*

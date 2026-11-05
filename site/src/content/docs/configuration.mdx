@@ -1,0 +1,78 @@
+## defineRoutes
+
+`@mismo/core/config`. The routes, defined once, as the default export of a `routes.config.ts` in the package that holds them:
+
+```ts title="routes.config.ts"
+import { expo } from "@mismo/expo";
+import { tanstack } from "@mismo/tanstack";
+import { defineRoutes } from "@mismo/core/config";
+
+export default defineRoutes({
+  source: "./routes",
+  input: expo.input(),
+  validFor: [tanstack, expo],
+  types: { shared: "./src/routes.gen.ts" },
+});
+```
+
+| Option | |
+| --- | --- |
+| `source` | Where the routes are: a folder, or a `routes.ts` for a React Router config. Relative to the config file. |
+| `input` | How you [defined them](/docs/routes-folder#other-ways-to-define-routes): `expo.input()`, `reactRouter.input()`, or your own. |
+| `validFor` | The adapters of every router the routes must stay valid for. Every app's build checks all of their [rules](/docs/rules). An app's own router is always checked. |
+| `types` | Types files for the shared package's own code, relative to the config file: `shared`, `web` and `native`. See [typed routes](/docs/typed-routes). |
+
+Node loads this file directly, without your bundler, so keep its imports to adapters and `@mismo/core/config`.
+
+## Vite plugin
+
+`@mismo/core/vite`. For apps that build with Vite, such as TanStack Start and React Router:
+
+```ts title="vite.config.ts"
+import { mismo } from "@mismo/core/vite";
+
+plugins: [
+  mismo({ config: "../../packages/app/routes.config.ts", output: tanstack.output({ outDir: "src/routes", types: "src/routes.gen.ts" }) }),
+  // …the router's own plugin, after it
+];
+```
+
+| Option | |
+| --- | --- |
+| `config` | The shared `routes.config.ts`, relative to the app. |
+| `output` | This app's router, from its adapter: `tanstack.output(…)`, `reactRouter.output(…)`. It takes `outDir`, the router's routes folder, and `types`, the app's types file, both relative to the app. |
+
+The plugin writes the routes before the router's plugin starts, and keeps them up to date in dev.
+
+## Next.js
+
+`@mismo/next/config`. See [Next.js](/docs/nextjs#nextconfig).
+
+## Metro
+
+`@mismo/expo/metro`. See [Expo Router](/docs/expo-router#metro).
+
+## CLI
+
+For typechecks, scripts, and apps without a Vite plugin or Metro:
+
+```sh
+mismo generate --config <file> --adapter <package> --out <dir> --types <file> [--watch]
+mismo types --config <file>
+```
+
+`generate` writes one app's routes and types, for the router `--adapter` names:
+
+```sh
+mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/tanstack --out src/routes --types src/routes.gen.ts
+```
+
+`--watch` keeps rewriting them as route files come and go.
+
+`types` writes the shared package's own types files, the ones its config's `types` lists:
+
+```sh
+mismo types --config routes.config.ts
+```
+
+Both check every router's rules first and write nothing if a route breaks one.

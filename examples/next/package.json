@@ -1,0 +1,24 @@
+{
+  "name": "@mismo/example-next",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "mismo's example on Next.js: the shared routes, built by Next.js itself.",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "typecheck": "mismo generate --config ../shared/routes.config.ts --adapter @mismo/next --out app --types app/routes.gen.ts && tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mismo/example-shared": "workspace:*",
+    "@mismo/next": "workspace:*",
+    "next": "^16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@mismo/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0"
+  }
+}

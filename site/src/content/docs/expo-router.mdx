@@ -1,0 +1,66 @@
+<Install packages="@mismo/expo" />
+
+`@mismo/expo` runs your shared screens and routes in an Expo Router app. It supports Expo Router `>=58 <59`, on React Native 0.79 or later.
+
+## Run shared routes
+
+Wrap Metro's config with `withMismo`, as [below](#metro). The shared routes then appear in `src/app`, next to the app's own: its root `_layout.tsx`, and routes only it has, such as `+not-found.tsx`.
+
+For a typecheck or a script, write them with the CLI:
+
+```sh
+mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/expo --out src/app --types src/routes.gen.ts
+```
+
+## Define shared routes
+
+`expo.input()` lets you write the shared routes as a folder in Expo Router's format, whichever routers run them. It's what most projects use, and it's described in [defining routes](/docs/routes-folder).
+
+```ts title="routes.config.ts"
+export default defineRoutes({ source: "./routes", input: expo.input() });
+```
+
+## Route exports
+
+A shared route's exports reach Expo Router, so its own route exports work as usual: `unstable_settings`, `ErrorBoundary`, `generateStaticParams`. Other routers' options are ignored, and a route's server file is never part of the native app. See [route options](/docs/route-options).
+
+## Metro
+
+`withMismo` writes the routes whenever Metro starts, for `expo start` and `expo export` alike, and keeps them up to date as route files come and go:
+
+```js title="metro.config.js"
+const { getDefaultConfig } = require("expo/metro-config");
+const { withMismo } = require("@mismo/expo/metro");
+
+module.exports = withMismo(getDefaultConfig(__dirname), {
+  config: "../../packages/app/routes.config.ts",
+  outDir: "src/app",
+  types: "src/routes.gen.ts",
+  cwd: __dirname,
+});
+```
+
+| Option | |
+| --- | --- |
+| `config` | The shared `routes.config.ts`, relative to `cwd`. |
+| `outDir` | Expo Router's folder. |
+| `types` | The app's types file. |
+| `cwd` | The app's folder: `__dirname`. |
+
+## Deep links
+
+Every shared route is also a deep link into the native app, with the same path as on the web: `/orgs/[id]` opens as `acme://orgs/acme`. Expo Router handles the links; the app only needs a URL scheme in its config:
+
+```json title="app.json"
+{
+  "expo": {
+    "scheme": "acme"
+  }
+}
+```
+
+To open the web's own URLs (`https://acme.app/orgs/acme`) in the app, set up universal links (iOS) and app links (Android) as Expo's linking guide describes. The paths already match.
+
+## Rules
+
+Expo Router takes everything an Expo Router folder can hold. Your other routers may not: see [rules](/docs/rules).

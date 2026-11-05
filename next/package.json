@@ -1,0 +1,63 @@
+{
+  "name": "@mismo/next",
+  "version": "0.1.0-beta.1",
+  "description": "mismo for Next.js (App Router): run shared screens and routes in a Next.js app.",
+  "keywords": [
+    "mismo",
+    "next",
+    "nextjs",
+    "app-router",
+    "routes"
+  ],
+  "homepage": "https://mismo.dev",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./runtime": "./src/runtime.tsx",
+    "./config": "./src/config.ts"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../scripts/fix-declarations.mjs dist",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "@mismo/core": "workspace:^"
+  },
+  "peerDependencies": {
+    "next": ">=16 <17",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "next": "^16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./runtime": {
+        "types": "./dist/runtime.d.ts",
+        "default": "./dist/runtime.js"
+      },
+      "./config": {
+        "types": "./dist/config.d.ts",
+        "default": "./dist/config.js"
+      }
+    }
+  }
+}
