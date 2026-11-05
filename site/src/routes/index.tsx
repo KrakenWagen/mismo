@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
-import { siExpo, siNextdotjs, siReactrouter, siTanstack } from "simple-icons";
+import { siExpo, siGithub, siNextdotjs, siReactrouter, siTanstack } from "simple-icons";
 
 import { Bento } from "@/components/bento";
 import { BadgeRow, FloatingBadges } from "@/components/framework-badges";
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import highlighted from "virtual:highlighted-snippets";
 
-import { site } from "@/lib/site";
+import { github, site } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   head: () => ({ links: [{ rel: "canonical", href: `${site}/` }] }),
@@ -226,17 +226,30 @@ function Footer() {
         <p>
           <span className="font-display text-lg text-foreground">mismo</span>, Spanish for “the same”.
         </p>
-        <p>
-          Built with <span aria-label="love">♥</span> by{" "}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <a
-            href="https://xilef.work"
+            href={github}
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-foreground underline decoration-brand/40 underline-offset-4 transition hover:decoration-brand"
+            className="inline-flex items-center gap-1.5 font-medium text-foreground underline decoration-brand/40 underline-offset-4 transition hover:decoration-brand"
           >
-            Krakenwagen
+            <svg viewBox="0 0 24 24" className="size-3.5 fill-current" aria-hidden>
+              <path d={siGithub.path} />
+            </svg>
+            GitHub
           </a>
-        </p>
+          <p>
+            Built with <span aria-label="love">♥</span> by{" "}
+            <a
+              href="https://xilef.work"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-foreground underline decoration-brand/40 underline-offset-4 transition hover:decoration-brand"
+            >
+              Krakenwagen
+            </a>
+          </p>
+        </div>
       </Container>
     </footer>
   );

@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { siGithub } from "simple-icons";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { github } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -40,6 +43,13 @@ export function SiteHeader({ wide = false, start }: { wide?: boolean; start?: Re
           <Badge variant="outline" className="hidden font-mono text-[11px] sm:inline-flex">
             beta
           </Badge>
+          <Button asChild variant="ghost" size="icon">
+            <a href={github} target="_blank" rel="noreferrer" aria-label="mismo on GitHub">
+              <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden>
+                <path d={siGithub.path} />
+              </svg>
+            </a>
+          </Button>
           <ThemeToggle />
         </div>
       </div>
