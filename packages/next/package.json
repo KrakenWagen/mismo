@@ -1,12 +1,12 @@
 {
-  "name": "@mismo/expo",
+  "name": "@mismo/next",
   "version": "0.1.0-beta.1",
-  "description": "mismo for Expo Router: run shared screens and routes on native, and define routes in Expo Router's format.",
+  "description": "mismo for Next.js (App Router): run shared screens and routes in a Next.js app.",
   "keywords": [
     "mismo",
-    "expo",
-    "expo-router",
-    "react-native",
+    "next",
+    "nextjs",
+    "app-router",
     "routes"
   ],
   "homepage": "https://mismo.dev",
@@ -15,7 +15,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./runtime": "./src/runtime.tsx",
-    "./metro": "./src/metro.ts"
+    "./config": "./src/config.ts"
   },
   "files": [
     "dist",
@@ -27,22 +27,21 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../scripts/fix-declarations.mjs dist",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../../scripts/fix-declarations.mjs dist",
     "prepack": "pnpm run build"
   },
   "dependencies": {
     "@mismo/core": "workspace:^"
   },
   "peerDependencies": {
-    "expo-router": ">=58 <59",
-    "react": ">=19",
-    "react-native": ">=0.79"
+    "next": ">=16 <17",
+    "react": ">=19"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
-    "expo-router": "~58.0.29",
+    "next": "^16.4.3",
     "react": "19.3.0",
-    "react-native": "0.88.0"
+    "react-dom": "19.3.0"
   },
   "publishConfig": {
     "access": "public",
@@ -55,9 +54,9 @@
         "types": "./dist/runtime.d.ts",
         "default": "./dist/runtime.js"
       },
-      "./metro": {
-        "types": "./dist/metro.d.ts",
-        "default": "./dist/metro.js"
+      "./config": {
+        "types": "./dist/config.d.ts",
+        "default": "./dist/config.js"
       }
     }
   }

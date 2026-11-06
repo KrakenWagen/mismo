@@ -1,12 +1,12 @@
 {
-  "name": "@mismo/tanstack",
+  "name": "@mismo/expo",
   "version": "0.1.0-beta.1",
-  "description": "mismo for TanStack Start and TanStack Router: run shared screens and routes in a TanStack app.",
+  "description": "mismo for Expo Router: run shared screens and routes on native, and define routes in Expo Router's format.",
   "keywords": [
     "mismo",
-    "tanstack",
-    "tanstack-router",
-    "tanstack-start",
+    "expo",
+    "expo-router",
+    "react-native",
     "routes"
   ],
   "homepage": "https://mismo.dev",
@@ -14,7 +14,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./runtime": "./src/runtime.tsx"
+    "./runtime": "./src/runtime.tsx",
+    "./metro": "./src/metro.ts"
   },
   "files": [
     "dist",
@@ -26,20 +27,22 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../scripts/fix-declarations.mjs dist",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../../scripts/fix-declarations.mjs dist",
     "prepack": "pnpm run build"
   },
   "dependencies": {
     "@mismo/core": "workspace:^"
   },
   "peerDependencies": {
-    "@tanstack/react-router": ">=1.160",
-    "react": ">=19"
+    "expo-router": ">=58 <59",
+    "react": ">=19",
+    "react-native": ">=0.79"
   },
   "devDependencies": {
-    "@tanstack/react-router": "^1.170.46",
     "@types/react": "^19.3.0",
-    "react": "19.3.0"
+    "expo-router": "~58.0.29",
+    "react": "19.3.0",
+    "react-native": "0.88.0"
   },
   "publishConfig": {
     "access": "public",
@@ -51,6 +54,10 @@
       "./runtime": {
         "types": "./dist/runtime.d.ts",
         "default": "./dist/runtime.js"
+      },
+      "./metro": {
+        "types": "./dist/metro.d.ts",
+        "default": "./dist/metro.js"
       }
     }
   }

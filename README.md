@@ -10,8 +10,8 @@ Docs: [mismo.dev](https://mismo.dev). Design notes: [DESIGN.md](DESIGN.md).
 
 | Folder | What it is |
 | --- | --- |
-| `core` | `@mismo/core`: the shared API, config, Vite plugin and CLI |
-| `expo`, `next`, `tanstack`, `react-router` | `@mismo/*`: one package per router |
+| `packages/core` | `@mismo/core`: the shared API, config, Vite plugin and CLI |
+| `packages/expo`, `packages/next`, `packages/tanstack`, `packages/react-router` | `@mismo/*`: one package per router |
 | `tests` | Tests across the packages |
 | `examples` | Shared routes, and apps that build them on Next.js and React Router |
 | `site` | mismo.dev: the landing page and docs |

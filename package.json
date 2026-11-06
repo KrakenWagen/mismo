@@ -8,12 +8,12 @@
   },
   "scripts": {
     "dev": "pnpm --filter @mismo/site dev",
-    "build": "pnpm -r --filter \"./{core,expo,tanstack,next,react-router}\" run build",
+    "build": "pnpm -r --filter \"./packages/*\" run build",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm --filter @mismo/tests test",
     "site:build": "pnpm --filter @mismo/site build",
     "site:deploy": "pnpm --filter @mismo/site run deploy",
-    "release": "pnpm -r --filter \"./{core,expo,tanstack,next,react-router}\" publish --tag beta"
+    "release": "pnpm -r --filter \"./packages/*\" publish --tag beta"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

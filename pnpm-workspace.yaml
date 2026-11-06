@@ -1,9 +1,5 @@
 packages:
-  - "core"
-  - "expo"
-  - "next"
-  - "react-router"
-  - "tanstack"
+  - "packages/*"
   - "tests"
   - "site"
   - "examples/*"

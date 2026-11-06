@@ -3,7 +3,7 @@
 // rewrites them too: `from "./output.ts"` becomes `from "./output.js"`, and `import("./x.tsx")`
 // becomes `import("./x.js")`.
 //
-//   node ../scripts/fix-declarations.mjs dist
+//   node ../../scripts/fix-declarations.mjs dist
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 

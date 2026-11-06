@@ -23,29 +23,17 @@ importers:
         specifier: ^5.0.5
         version: 5.1.0(@types/node@24.19.2)(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2))
 
-  core:
-    devDependencies:
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      react:
-        specifier: 19.3.0
-        version: 19.3.0
-      vite:
-        specifier: ^8.3.4
-        version: 8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)
-
   examples/next:
     dependencies:
       '@mismo/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
       '@mismo/example-shared':
         specifier: workspace:*
         version: link:../shared
       '@mismo/next':
         specifier: workspace:*
-        version: link:../../next
+        version: link:../../packages/next
       next:
         specifier: ^16.4.3
         version: 16.4.5(@types/node@24.19.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -67,13 +55,13 @@ importers:
     dependencies:
       '@mismo/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
       '@mismo/example-shared':
         specifier: workspace:*
         version: link:../shared
       '@mismo/react-router':
         specifier: workspace:*
-        version: link:../../react-router
+        version: link:../../packages/react-router
       isbot:
         specifier: ^5
         version: 5.2.2
@@ -104,19 +92,19 @@ importers:
     dependencies:
       '@mismo/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
       '@mismo/expo':
         specifier: workspace:*
-        version: link:../../expo
+        version: link:../../packages/expo
       '@mismo/next':
         specifier: workspace:*
-        version: link:../../next
+        version: link:../../packages/next
       '@mismo/react-router':
         specifier: workspace:*
-        version: link:../../react-router
+        version: link:../../packages/react-router
       '@mismo/tanstack':
         specifier: workspace:*
-        version: link:../../tanstack
+        version: link:../../packages/tanstack
       '@tanstack/react-router':
         specifier: ^1.170.46
         version: 1.170.46(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -135,13 +123,13 @@ importers:
     dependencies:
       '@mismo/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
       '@mismo/example-shared':
         specifier: workspace:*
         version: link:../shared
       '@mismo/tanstack':
         specifier: workspace:*
-        version: link:../../tanstack
+        version: link:../../packages/tanstack
       '@tanstack/react-router':
         specifier: ^1.170.46
         version: 1.170.46(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -168,7 +156,19 @@ importers:
         specifier: ^8.3.4
         version: 8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)
 
-  expo:
+  packages/core:
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+      vite:
+        specifier: ^8.3.4
+        version: 8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)
+
+  packages/expo:
     dependencies:
       '@mismo/core':
         specifier: workspace:^
@@ -187,7 +187,7 @@ importers:
         specifier: 0.88.0
         version: 0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.88.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
 
-  next:
+  packages/next:
     dependencies:
       '@mismo/core':
         specifier: workspace:^
@@ -206,7 +206,7 @@ importers:
         specifier: 19.3.0
         version: 19.3.0(react@19.3.0)
 
-  react-router:
+  packages/react-router:
     dependencies:
       '@mismo/core':
         specifier: workspace:^
@@ -224,6 +224,22 @@ importers:
       react-router:
         specifier: ^8.5.1
         version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+
+  packages/tanstack:
+    dependencies:
+      '@mismo/core':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      '@tanstack/react-router':
+        specifier: ^1.170.46
+        version: 1.170.46(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
 
   site:
     dependencies:
@@ -313,39 +329,23 @@ importers:
         specifier: ^4.151.1
         version: 4.158.0(@types/node@24.19.2)
 
-  tanstack:
-    dependencies:
-      '@mismo/core':
-        specifier: workspace:^
-        version: link:../core
-    devDependencies:
-      '@tanstack/react-router':
-        specifier: ^1.170.46
-        version: 1.170.46(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      react:
-        specifier: 19.3.0
-        version: 19.3.0
-
   tests:
     dependencies:
       '@mismo/core':
         specifier: workspace:*
-        version: link:../core
+        version: link:../packages/core
       '@mismo/expo':
         specifier: workspace:*
-        version: link:../expo
+        version: link:../packages/expo
       '@mismo/next':
         specifier: workspace:*
-        version: link:../next
+        version: link:../packages/next
       '@mismo/react-router':
         specifier: workspace:*
-        version: link:../react-router
+        version: link:../packages/react-router
       '@mismo/tanstack':
         specifier: workspace:*
-        version: link:../tanstack
+        version: link:../packages/tanstack
 
 packages:
 

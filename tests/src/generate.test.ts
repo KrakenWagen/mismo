@@ -99,8 +99,8 @@ describe("loadRoutesConfig", () => {
     put(
       dir,
       "routes.config.ts",
-      `import { defineRoutes } from "${mismo}/core/src/config/define.ts";
-import { expo } from "${mismo}/expo/src/index.ts";
+      `import { defineRoutes } from "${mismo}/packages/core/src/config/define.ts";
+import { expo } from "${mismo}/packages/expo/src/index.ts";
 export default defineRoutes({ source: "./routes", input: expo.input(), types: { shared: "./src/routes.gen.ts" } });
 `,
     );
