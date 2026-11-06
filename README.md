@@ -1,6 +1,14 @@
-# mismo
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.png">
+    <img alt="mismo: write your screens once, run them on any stack." src="docs/images/banner-light.png">
+  </picture>
+</p>
 
-Write your screens once. Run them on any stack.
+<p align="center">
+  <a href="https://www.npmjs.com/package/@mismo/core"><img alt="npm version" src="https://img.shields.io/npm/v/@mismo/core?label=npm&color=e8590c"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-lightgrey"></a>
+</p>
 
 mismo shares screens, routes and navigation between a React Native app and a web app, while each app keeps its own router: Expo Router or React Navigation on native, and Next.js, TanStack Start or React Router on the web.
 
