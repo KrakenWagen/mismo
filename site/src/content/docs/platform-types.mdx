@@ -1,0 +1,46 @@
+Most projects don't need this page: [typed routes](/docs/navigation#typed-routes) covers the usual setup, with one types file for the shared package.
+
+If the shared package has `.web` or `.native` files that link to platform-only routes, those files need their platform's types, and the plain files must not see them. List a file per platform:
+
+```ts title="packages/app/routes.config.ts"
+types: {
+  shared: "./src/routes.gen.ts",
+  web: "./src/routes.web.gen.ts",
+  native: "./src/routes.native.gen.ts",
+},
+```
+
+Then check each platform's files on their own, since one TypeScript program would see every types file and allow any route. Use a tsconfig per platform, tied together with project references:
+
+```json title="packages/app/tsconfig.shared.json"
+{
+  "compilerOptions": { "jsx": "react-jsx", "moduleResolution": "Bundler" },
+  // The plain files, with the routes every platform has.
+  "include": ["routes", "src"],
+  "exclude": ["**/*.native.*", "**/*.ios.*", "**/*.android.*", "**/*.web.*", "src/routes.*.gen.ts"]
+}
+```
+
+```json title="packages/app/tsconfig.web.json"
+{
+  "extends": "./tsconfig.shared.json",
+  // The web files, with the shared routes plus the web ones.
+  "include": ["routes/**/*.web.*", "src/**/*.web.*", "src/routes.web.gen.ts"],
+  "exclude": []
+}
+```
+
+`tsconfig.native.json` is the same with `native`. The root `tsconfig.json` references all three, so `tsc -b` and editors use the right one for each file:
+
+```json title="packages/app/tsconfig.json"
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.shared.json" },
+    { "path": "./tsconfig.native.json" },
+    { "path": "./tsconfig.web.json" }
+  ]
+}
+```
+
+The typecheck script then runs `tsc -b` instead of `tsc`.

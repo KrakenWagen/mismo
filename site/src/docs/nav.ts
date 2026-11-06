@@ -31,12 +31,7 @@ export const sections: DocSection[] = [
       {
         slug: "navigation",
         title: "Navigation",
-        description: "Link, useNav, Redirect and the rest: one API for screens, on every router.",
-      },
-      {
-        slug: "typed-routes",
-        title: "Typed routes",
-        description: "Links that only name routes every app has, with their params.",
+        description: "Link, useNav, Redirect and the rest: one API for screens, on every router, with links typed from your routes.",
       },
       {
         slug: "route-options",
@@ -45,8 +40,8 @@ export const sections: DocSection[] = [
       },
       {
         slug: "rules",
-        title: "Rules",
-        description: "Why a route one router can't take fails every app's build, and what each router can't take.",
+        title: "Rules and limits",
+        description: "Why a route one router can't take fails every app's build, what each router can't take, and what mismo doesn't do yet.",
       },
     ],
   },
@@ -92,6 +87,11 @@ export const sections: DocSection[] = [
         slug: "troubleshooting",
         title: "Troubleshooting",
         description: "The errors you're most likely to see, what they mean, and the fix.",
+      },
+      {
+        slug: "platform-types",
+        title: "Types for platform files",
+        description: "Typecheck .web and .native files against their own platform's routes.",
       },
       {
         slug: "adapters",

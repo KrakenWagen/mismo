@@ -82,15 +82,25 @@ export const reactRouter = {
 } satisfies ReactRouterServerOptions;
 ```
 
-| In the route's module | In its server file |
-| --- | --- |
-| `meta`, `links`, `handle`, `clientLoader`, `clientAction`, `ErrorBoundary`, `HydrateFallback`, `shouldRevalidate` | `loader`, `action`, `headers`, `middleware` |
+The options each side takes are in [route options](/docs/route-options#what-each-router-takes).
 
 React Router reads each as it would from its own route module, and its build keeps the server ones out of the browser. A `loader` in the route's file would ship to the phone, so the build stops and says to move it.
 
 `ReactRouterRouteOptions<typeof server>` types `meta`'s `loaderData` from the loader in the server file: here `{ title: string }`. `import type` disappears from the built code, so the native app still never bundles the server file.
 
-A shared screen can't call `useLoaderData`, since it runs on native too. Read a loader's data in `meta`, or in a web-only version of the screen (`orgs/[id].web.tsx`). See [route options](/docs/route-options).
+A shared screen can't call `useLoaderData`, since it runs on native too: see [reading the data in a screen](/docs/route-options#reading-the-data-in-a-screen).
+
+## Typecheck
+
+Generated files aren't committed, so a typecheck has to write them first, then React Router's types:
+
+```json title="apps/web/package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/react-router --out app/mismo --types app/routes.gen.ts && react-router typegen && tsc"
+  }
+}
+```
 
 ## Rules
 

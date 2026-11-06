@@ -36,6 +36,33 @@ An app's own router is always checked, whether it's listed or not. A router that
 
 Where a router would quietly treat a name as something else, such as `.` as a path separator on TanStack Start or `_` as a private folder on Next.js, mismo stops the build instead of letting the route change meaning.
 
-## Limits of the format
+## Limits
 
-Some limits come from how you define the routes, not from a router: an Expo Router folder can't hold [catch-all or `+` routes yet](/docs/routes-folder#not-supported-yet), and a React Router config can't use [splats or optional segments yet](/docs/react-router#define-shared-routes-with-a-config). These fail every build too, with an error naming the file.
+Beyond the routers' rules, mismo has limits of its own. This is what it doesn't do yet, so you can tell early whether it fits, and what to do instead. mismo is in beta (`0.1.0-beta.1`), and its APIs can still change before 1.0: pin the version you install.
+
+### Defining routes
+
+- **Catch-all and `+` routes** can't be in a shared Expo Router folder: `[...rest].tsx`, `+not-found.tsx`, `+api.ts`. The build stops with an error naming the file. Keep them in each app's own routes, next to the shared ones. See [defining routes](/docs/routes-folder#not-supported-yet).
+- **Splats (`*`) and optional segments (`:lang?`)** can't be in a shared React Router config yet. See [React Router](/docs/react-router#define-shared-routes-with-a-config).
+- **Two ways to write routes:** an Expo Router folder, or a React Router config. A project picks one, and it doesn't limit which routers run the routes. A Next.js or TanStack folder can't be the format. You can [write your own](/docs/adapters#routeinput).
+
+### Each app's own routes
+
+- **No shared root layout.** Each app owns its root (the HTML document on the web, the providers and navigator on native). Share what they have in common as a component. See [the root layout](/docs/routes-folder#the-root-layout).
+- **Router-only features stay in the app.** Not-found pages, API routes, and parallel or intercepting routes use each router's own conventions, so they live in that app's own routes, not the shared folder.
+
+### Screens
+
+- **A shared screen uses `@mismo/core` for navigation.** It runs on every platform, so it can't call one router's `Link` or data hooks. Code that runs on one platform, such as a `.web.tsx` file, can use its router's API directly.
+- **Shared screens are client components on Next.js.** They also run on the phone, so they can't be server components. Next.js still renders them on the server for the first load, and the generated server page carries each route's metadata and caching. See [Next.js](/docs/nextjs#server-and-client).
+- **A loader's data isn't available to a shared screen.** Read it in the router's own options (React Router's `meta` gets `loaderData`), or in a web-only version of the screen. See [route options](/docs/route-options#reading-the-data-in-a-screen).
+
+### Server code
+
+- **TanStack Start runs a loader in the browser too,** so a route's server file is in the web app's browser bundle. Keep server-only work in a `createServerFn`. See [TanStack Start](/docs/tanstack-start#route-options).
+- **Expo Router takes no server options.** Its server loaders and API routes aren't part of the native app mismo builds. A route's server file never reaches native.
+
+### Routers and versions
+
+- **Native is Expo Router only.** React Navigation isn't supported.
+- **Version ranges:** Expo Router `>=58 <59`, Next.js `>=16 <17`, React Router `>=8 <9`, TanStack Router `>=1.160`, React 19. See [routers](/docs/routers).

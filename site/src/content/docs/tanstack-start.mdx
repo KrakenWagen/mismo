@@ -27,7 +27,7 @@ ssr: { noExternal: ["@acme/app", "@mismo/core", "@mismo/tanstack"] },
 
 ## Route options
 
-A route's TanStack options, such as `ssr`, `head`, `beforeLoad` or `loader`, are its `tanstack` export:
+A route's TanStack options, such as `ssr` or `head`, are its `tanstack` export:
 
 ```tsx title="routes/(shell)/_layout.tsx"
 import type { TanstackRouteOptions } from "@mismo/tanstack";
@@ -41,9 +41,53 @@ export default function Shell() {
 
 They reach `createFileRoute`, and the web app's typecheck checks them there. Expo Router ignores the export.
 
-The native app imports the same file, so whatever the options import ships to the phone. TanStack's loaders run in the browser as well as on the server, so they stay in this file: keep server-only work behind a server function or a dynamic import.
+The options that hold server code, `loader` and `beforeLoad`, go in the route's server file, which the native app never bundles:
+
+```ts title="routes/orgs/[id].server.ts"
+import type { TanstackServerOptions } from "@mismo/tanstack";
+
+import { getOrg } from "./get-org";
+
+export const tanstack = {
+  loader: ({ params }) => getOrg({ data: params.id }),
+} satisfies TanstackServerOptions;
+```
+
+A `loader` in the route's module is an error that says to move it.
+
+TanStack runs a loader in the browser too, on client-side navigation, so the server file is in the web app's browser bundle. Keep server-only work in a `createServerFn`: TanStack's compiler replaces its body with a call to the server in the browser's bundle.
+
+```ts title="routes/orgs/get-org.ts"
+import { createServerFn } from "@tanstack/react-start";
+
+export const getOrg = createServerFn()
+  .inputValidator((id: string) => id)
+  .handler(async ({ data }) => db.orgs.find(data));
+```
+
+TanStack Start refuses `*.server.*` files in the browser's bundle, and a loader needs this one there. Let the shared routes' server files through in `vite.config.ts`:
+
+```ts title="vite.config.ts"
+tanstackStart({
+  importProtection: { client: { excludeFiles: ["**/app/routes/**/*.server.*"] } },
+}),
+```
+
+Match the pattern to where your shared routes live.
 
 See [route options](/docs/route-options) for how every router's work.
+
+## Typecheck
+
+Generated files aren't committed, so a typecheck has to write them first, then TanStack's route tree:
+
+```json title="apps/web/package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/tanstack --out src/routes --types src/routes.gen.ts && tsr generate && tsc"
+  }
+}
+```
 
 ## Rules
 

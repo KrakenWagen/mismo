@@ -85,7 +85,7 @@ routes/
 └── scan.native.tsx       /scan exists on native only
 ```
 
-A route with no file for a platform doesn't exist there. [Typed routes](/docs/typed-routes) keep shared screens from linking to it.
+A route with no file for a platform doesn't exist there. [Typed routes](/docs/navigation#typed-routes) keep shared screens from linking to it.
 
 <Callout>
 Expo Router on its own requires a plain file next to every platform file. Here you don't need one: `billing.web.tsx` alone is fine.
@@ -93,7 +93,7 @@ Expo Router on its own requires a plain file next to every platform file. Here y
 
 ## Server files
 
-A file named after a route with `.server` (`orgs/[id].server.ts`) holds that route's server code for the web routers, such as a React Router loader or Next.js's `generateMetadata`. It isn't a route, and the native app never bundles it. See [route options](/docs/route-options).
+A file named after a route with `.server` (`orgs/[id].server.ts`) holds that route's server code for the web routers, such as a loader or `generateMetadata`. It isn't a route, and the native app never bundles it. See [route options](/docs/route-options).
 
 ## The root layout
 
@@ -106,7 +106,7 @@ An Expo Router folder can't hold these yet, and the build stops with an error na
 - **Catch-all routes**, `[...rest].tsx`.
 - **`+` routes**, such as `+not-found.tsx` and `+api.ts`.
 
-You can still have them: keep them in each app's own routes folder, next to the shared routes.
+You can still have them: keep them in each app's own routes folder, next to the shared routes. See [limits](/docs/rules#limits) for everything mismo doesn't do yet.
 
 ## Other ways to define routes
 

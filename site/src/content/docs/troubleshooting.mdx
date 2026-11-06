@@ -73,4 +73,4 @@ The CLI's `--adapter` names a package that isn't a router adapter. Pass the adap
 
 ## A typecheck can't find the routes
 
-`tsc` fails on missing route files or a missing `routes.gen.ts` in a fresh checkout. Generated files aren't committed, so a typecheck has to write them first: run `mismo generate` before `tsc`, as in each app's script in [Getting started](/docs/getting-started). On TanStack Start, also run `tsr generate`; on React Router, `react-router typegen`.
+`tsc` fails on missing route files or a missing `routes.gen.ts` in a fresh checkout. Generated files aren't committed, so a typecheck has to write them first: run `mismo generate` before `tsc`. Each router's page has the script: [Next.js](/docs/nextjs#typecheck), [TanStack Start](/docs/tanstack-start#typecheck) (also `tsr generate`) and [React Router](/docs/react-router#typecheck) (also `react-router typegen`). For the shared package's own types, use `mismo types`: see [typed routes](/docs/navigation#typed-routes).

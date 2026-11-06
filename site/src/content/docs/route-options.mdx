@@ -27,6 +27,7 @@ export const reactRouter = {
 ```ts title="routes/orgs/[id].server.ts"
 import type { NextServerOptions } from "@mismo/next";
 import type { ReactRouterServerOptions } from "@mismo/react-router";
+import type { TanstackServerOptions } from "@mismo/tanstack";
 
 export const next = {
   async generateMetadata({ params }) {
@@ -40,6 +41,10 @@ export const reactRouter = {
     return getOrg(params.id);
   },
 } satisfies ReactRouterServerOptions;
+
+export const tanstack = {
+  loader: ({ params }) => getOrg({ data: params.id }),
+} satisfies TanstackServerOptions;
 ```
 
 The native app bundles the route's module, so anything there ships to the phone. The server file is imported only by the web app's generated files: the native app never sees it, and it isn't a route of its own. Server code (database clients, secrets, loaders) belongs there.
@@ -48,19 +53,19 @@ The native app bundles the route's module, so anything there ships to the phone.
 
 | Router | In the route's module | In its server file | Types |
 | --- | --- | --- | --- |
-| [TanStack Start](/docs/tanstack-start#route-options) | `tanstack`: any route option (`ssr`, `head`, `beforeLoad`, `loader`, …) | — | `TanstackRouteOptions` |
+| [TanStack Start](/docs/tanstack-start#route-options) | `tanstack`: `ssr`, `head`, … | `tanstack`: `loader`, `beforeLoad` | `TanstackRouteOptions`, `TanstackServerOptions` |
 | [React Router](/docs/react-router#route-options) | `reactRouter`: `meta`, `links`, `handle`, `clientLoader`, `clientAction`, `ErrorBoundary`, `HydrateFallback`, `shouldRevalidate` | `reactRouter`: `loader`, `action`, `headers`, `middleware` | `ReactRouterRouteOptions`, `ReactRouterServerOptions` |
 | [Next.js](/docs/nextjs#route-options) | `next`: plain values only: `metadata`, `viewport`, and the segment config (`dynamic`, `revalidate`, …) | `next`: `generateMetadata`, `generateViewport`, `generateStaticParams`, and any value that needs code | `NextRouteOptions`, `NextServerOptions` |
 | [Expo Router](/docs/expo-router#route-exports) | Its own exports, as in any Expo Router route: `unstable_settings`, `ErrorBoundary`, … | — | Expo Router's |
 
-TanStack Start's loaders run in the browser too, so its options all stay in the route's file. Next.js only reads options on the server, which is why its values beside the screen must be plain data.
+TanStack Start's loaders run in the browser too, so its server file is part of the web app's browser bundle: keep server-only work in a `createServerFn` there. Next.js only reads options on the server, which is why its values beside the screen must be plain data.
 
 ## Writing options
 
 - **Write each object out.** `export const next = { revalidate: 60 }`, not `export const next = makeOptions()` or `{ ...base }`: mismo reads them without running your code.
 - **Next.js values in the module are plain data.** `metadata: { title: "Settings" }`, `revalidate: 60`: mismo copies them as written, so they can't name anything else in the file. A value that needs code, such as a title built from a variable, goes in the server file, or becomes `generateMetadata` there.
 - **One place per option.** An option set in both the module and the server file is an error. Next.js also takes either `metadata` or `generateMetadata` for a route, not both: a fixed title can be plain `metadata` in the module, and a title built from the route's params is `generateMetadata` in the server file.
-- **A misplaced option is an error.** A React Router `loader` in the route's module would ship to the phone, so the build stops and says to move it to the server file. An option a router doesn't have is an error too.
+- **A misplaced option is an error.** A `loader` in the route's module (React Router or TanStack Start) would ship to the phone, so the build stops and says to move it to the server file. An option a router doesn't have is an error too.
 
 ## Typing options from the server file
 

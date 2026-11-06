@@ -18,7 +18,7 @@ Install `@mismo/core` in the shared package, plus the adapter of every router yo
 
 <Install packages="@mismo/core @mismo/expo @mismo/next" title="packages/app" />
 
-This guide defines the routes as a folder in Expo Router's format, even for apps that don't run Expo Router. You can [use a React Router config instead](/docs/routes-folder#other-ways-to-define-routes). A config next to it says how the routes are written and which routers they're for:
+A config next to the routes says how they're written and which routers they're for. This guide writes them as a folder in Expo Router's format, even for apps that don't run Expo Router. You can [use a React Router config instead](/docs/routes-folder#other-ways-to-define-routes).
 
 ```ts title="packages/app/routes.config.ts"
 import { expo } from "@mismo/expo";
@@ -31,8 +31,6 @@ export default defineRoutes({
   input: expo.input(),
   // The routers your apps use: every app's build checks all of their rules.
   validFor: [next, expo],
-  // Types for the shared package's own screens.
-  types: { shared: "./src/routes.gen.ts" },
 });
 ```
 
@@ -40,9 +38,17 @@ On TanStack Start or React Router, install and list `@mismo/tanstack` (`tanstack
 
 The config knows nothing about the apps. Each app reads it and writes its own routes, so adding an app never changes this file.
 
-## Write a screen
+## Write two screens
 
 A route file's default export is its screen. It imports everything about navigation from `@mismo/core`:
+
+```tsx title="packages/app/routes/index.tsx"
+import { Link } from "@mismo/core";
+
+export default function Home() {
+  return <Link to={{ href: "/orgs/[id]", params: { id: "acme" } }}>Acme</Link>;
+}
+```
 
 ```tsx title="packages/app/routes/orgs/[id].tsx"
 import { Link, useParams } from "@mismo/core";
@@ -60,8 +66,6 @@ export default function Org() {
 ```
 
 See [defining routes](/docs/routes-folder) for layouts, groups, and files for one platform.
-
-A route can also set each router's own options beside the screen, such as a page title or caching, and keep server code such as a loader in a file beside it (`orgs/[id].server.ts`) that the native app never bundles. See [route options](/docs/route-options).
 
 ## The web app
 
@@ -88,17 +92,7 @@ export default withMismo(config, {
 });
 ```
 
-Next.js needs a root layout, and it's the app's own: keep `app/layout.tsx`, with `<html>` and `<body>`, next to the generated routes.
-
-A typecheck needs the generated files before `tsc` runs:
-
-```json title="apps/web/package.json"
-{
-  "scripts": {
-    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/next --out app --types app/routes.gen.ts && tsc"
-  }
-}
-```
+Next.js needs a root layout, and it's the app's own: keep `app/layout.tsx`, with `<html>` and `<body>`, next to the generated routes. More in [Next.js](/docs/nextjs).
 
 </Tab>
 <Tab label="TanStack Start">
@@ -128,17 +122,7 @@ export default defineConfig({
 });
 ```
 
-The app's own root route (`src/routes/__root.tsx`) stays in `src/routes`, next to the generated ones.
-
-A typecheck needs the generated files, then TanStack's route tree, before `tsc` runs:
-
-```json title="apps/web/package.json"
-{
-  "scripts": {
-    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/tanstack --out src/routes --types src/routes.gen.ts && tsr generate && tsc"
-  }
-}
-```
+The app's own root route (`src/routes/__root.tsx`) stays in `src/routes`, next to the generated ones. More in [TanStack Start](/docs/tanstack-start).
 
 </Tab>
 <Tab label="React Router">
@@ -176,15 +160,7 @@ import { routes } from "./mismo/routes";
 export default [...routes] satisfies RouteConfig;
 ```
 
-A typecheck needs the generated files, then React Router's types, before `tsc` runs:
-
-```json title="apps/web/package.json"
-{
-  "scripts": {
-    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/react-router --out app/mismo --types app/routes.gen.ts && react-router typegen && tsc"
-  }
-}
-```
+More in [React Router](/docs/react-router).
 
 </Tab>
 </Tabs>
@@ -207,28 +183,20 @@ module.exports = withMismo(getDefaultConfig(__dirname), {
 });
 ```
 
-The app's root `_layout.tsx` stays in `src/app`. For a typecheck, generate first:
+The app's root `_layout.tsx` stays in `src/app`. More in [Expo Router](/docs/expo-router).
 
-```json title="apps/native/package.json"
-{
-  "scripts": {
-    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/expo --out src/app --types src/routes.gen.ts && tsc"
-  }
-}
-```
+## Try it
 
-## Generated files
+Start both apps. Open `/` on the web, or the home screen on the phone, and follow the link to Acme. It's the same two files in both, and the link works in both.
 
-Builds write the routes for you, so they aren't committed:
+Each app's build wrote its router's route files. They're generated, so they aren't committed:
 
 - **Route files** start with a `// Generated by mismo` line, and git skips them without any setup. When a route is deleted from the shared folder, its generated file goes too.
-- **Types files** (`routes.gen.ts`, and the shared package's `routes.web.gen.ts` and `routes.native.gen.ts`) are yours to ignore. Add them to the project's `.gitignore`:
-
-```text title=".gitignore"
-**/routes*.gen.ts
-```
+- **Types files** (`routes.gen.ts`) are yours to ignore. Add them to the project's `.gitignore`: `**/routes*.gen.ts`.
 
 Your own route files in the same folder are never touched. If one sits where a generated file would go, the build stops and names both, rather than overwriting it.
+
+A typecheck needs the generated files first, so each router's page has a script for it.
 
 ## In an existing app
 
