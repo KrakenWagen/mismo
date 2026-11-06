@@ -1,0 +1,22 @@
+{
+  // The published build of a package: JavaScript and declarations in its dist, the source's .ts
+  // imports rewritten to .js. Extend it after the package's own tsconfig.json.
+  "compilerOptions": {
+    "noEmit": false,
+    "rewriteRelativeImportExtensions": true,
+    "outDir": "${configDir}/dist",
+    "rootDir": "${configDir}/src",
+    "declarationMap": false,
+    "sourceMap": false,
+    // Router packages are compiled against @mismo/core's build, so their declarations import its types.
+    "paths": {
+      "@mismo/core": ["../packages/core/dist/runtime/index.d.ts"],
+      "@mismo/core/config": ["../packages/core/dist/config/index.d.ts"],
+      "@mismo/core/adapter": ["../packages/core/dist/adapter/index.d.ts"],
+      "@mismo/core/generate": ["../packages/core/dist/generate/index.d.ts"],
+      "@mismo/core/vite": ["../packages/core/dist/integrations/vite.d.ts"],
+      "@mismo/core/contract": ["../packages/core/dist/runtime/contract.d.ts"]
+    }
+  },
+  "include": ["${configDir}/src"]
+}

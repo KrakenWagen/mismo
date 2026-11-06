@@ -1,0 +1,14 @@
+{
+  // A web app Vite builds for the browser and the server: the DOM, and no declarations.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "declaration": false,
+    "declarationMap": false,
+    // TanStack Start says this option leaks server modules into the client bundle.
+    "verbatimModuleSyntax": false
+  }
+}

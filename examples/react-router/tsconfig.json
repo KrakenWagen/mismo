@@ -4,19 +4,8 @@
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "types": [
-      "node",
-      "react",
-      "vite/client"
-    ],
-    "rootDirs": [
-      ".",
-      "./.react-router/types"
-    ]
+    "types": ["node", "react", "vite/client"],
+    "rootDirs": [".", "./.react-router/types"]
   },
-  "include": [
-    "app",
-    ".react-router/types/**/*",
-    "*.ts"
-  ]
+  "include": ["app", ".react-router/types/**/*", "*.ts"]
 }

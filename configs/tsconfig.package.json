@@ -1,0 +1,11 @@
+{
+  // A published @mismo package: source a bundler resolves, React types, everything in src.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "types": ["node", "react"]
+  },
+  "include": ["${configDir}/src"]
+}

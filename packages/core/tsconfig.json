@@ -1,15 +1,3 @@
 {
-  "extends": "../../configs/tsconfig.json",
-  "compilerOptions": {
-    "module": "Preserve",
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "types": [
-      "node",
-      "react"
-    ]
-  },
-  "include": [
-    "src"
-  ]
+  "extends": "../../configs/tsconfig.package.json"
 }
