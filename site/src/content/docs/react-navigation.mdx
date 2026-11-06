@@ -1,0 +1,140 @@
+<Install packages="@mismo/react-navigation" />
+
+`@mismo/react-navigation` runs your shared screens and routes in a React Native app on React Navigation. It supports React Navigation `>=7.5 <8`, on React Native 0.79 or later. Use it when your app doesn't run Expo Router; for Expo Router, see [Expo Router](/docs/expo-router).
+
+React Navigation also needs its own packages in the app:
+
+```sh
+pnpm add @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context
+```
+
+## Run shared routes
+
+Wrap Metro's config with `withMismo`. Metro loads its config whenever it bundles, so the navigators exist before the app is built, and `withMismo` keeps them up to date as route files come and go:
+
+```js title="metro.config.js"
+const { getDefaultConfig } = require("@react-native/metro-config");
+const { withMismo } = require("@mismo/react-navigation/metro");
+
+module.exports = withMismo(getDefaultConfig(__dirname), {
+  config: "../../packages/app/routes.config.ts",
+  outDir: "src/navigation",
+  types: "src/routes.gen.ts",
+  cwd: __dirname,
+});
+```
+
+| Option | |
+| --- | --- |
+| `config` | The shared `routes.config.ts`, relative to `cwd`. |
+| `outDir` | Where the navigators are written: `src/navigation`. |
+| `types` | The app's types file. |
+| `cwd` | The app's folder: `__dirname`. |
+
+For a typecheck or a script, write them with the CLI instead:
+
+```sh
+mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/react-navigation --out src/navigation --types src/routes.gen.ts
+```
+
+## Mount the navigation
+
+The build writes one file, `src/navigation/routes.tsx`, and it exports `Navigation`. Mount it where the app mounts its navigation, and say which URLs open the app:
+
+```tsx title="src/App.tsx"
+import { Navigation } from "./navigation/routes";
+
+export default function App() {
+  return <Navigation linking={{ prefixes: ["acme://"] }} />;
+}
+```
+
+`Navigation` is React Navigation's own static navigation, so it takes the same props: `theme`, `onReady`, and the rest. Deep links are on. Every shared route is also a link into the app, with the same path as on the web: `/orgs/[id]` opens as `acme://orgs/acme`. To open the web's own URLs in the app, set up universal links (iOS) and app links (Android) as React Navigation's linking guide describes. The paths already match.
+
+The generated file also exports `Root`, the root navigator, for apps that compose it themselves.
+
+## Layouts are navigators
+
+React Navigation has no layout files: every level of screens is a navigator. So each shared layout becomes one, and the layout's own component is rendered around it. `Slot` renders the screens below:
+
+```tsx title="routes/(app)/_layout.tsx"
+import { Slot } from "@mismo/core";
+
+export default function AppLayout() {
+  return (
+    <Shell>
+      <Slot />
+    </Shell>
+  );
+}
+```
+
+A layout is a native stack unless it says otherwise. Export `reactNavigation` from the layout's module, with `navigator` written as a literal:
+
+```tsx title="routes/(tabs)/_layout.tsx"
+import type { ReactNavigationLayoutOptions } from "@mismo/react-navigation";
+
+export const reactNavigation = {
+  navigator: "tabs",
+  initialRouteName: "(tabs)/home",
+  screenOptions: { tabBarLabelPosition: "below-icon" },
+} satisfies ReactNavigationLayoutOptions;
+```
+
+| `navigator` | React Navigation | Install |
+| --- | --- | --- |
+| `"stack"` (default) | `createNativeStackNavigator` | `@react-navigation/native-stack` |
+| `"tabs"` | `createBottomTabNavigator` | `@react-navigation/bottom-tabs` |
+| `"drawer"` | `createDrawerNavigator` | `@react-navigation/drawer` |
+
+The app installs the ones its layouts use. A group without a layout adds no navigator: its routes sit in the navigator around it.
+
+Headers are off by default, because a shared screen brings its own. Turn them on for a layout's screens with `screenOptions: { headerShown: true }`.
+
+## Route options
+
+A page can set React Navigation's options for its screen, next to the screen. They reach the screen as written:
+
+```tsx title="routes/orgs/[id].tsx"
+import type { ReactNavigationScreenOptions } from "@mismo/react-navigation";
+
+export default function Org() {
+  // …
+}
+
+export const reactNavigation = {
+  options: { title: "Organization", headerShown: true },
+} satisfies ReactNavigationScreenOptions;
+```
+
+| Option | |
+| --- | --- |
+| `options` | The screen's options: title, header, animation. |
+| `listeners` | The screen's event listeners. |
+| `initialParams` | Params the screen has when it opens without any. |
+| `getId` | A screen with the same id is reused instead of pushed again. |
+
+A layout takes these for itself in its parent, and its navigator takes `navigator`, `screenOptions` (the options of every screen in it) and `initialRouteName`. Other routers' options in the same file are ignored, and a route's server file is never part of the native app. See [route options](/docs/route-options).
+
+## Navigation
+
+`Link`, `useNav` and the rest from `@mismo/core` run on React Navigation. They navigate by URL: a `To` becomes a path, and your linking config turns the path into screens. Two things differ from a stack's own methods:
+
+- `go` is React Navigation's `navigate` by URL, so what it does with a screen that is already in the stack is React Navigation's own rule for `navigate`. `replace` swaps the current screen for the one the URL opens.
+- `useParams` returns the params of the whole URL, including those of the layouts around the screen, which React Navigation keeps on the layouts' own routes.
+
+## Typecheck
+
+Generated files aren't committed, so a typecheck has to write them first:
+
+```json title="package.json"
+{
+  "scripts": {
+    "typecheck": "mismo generate --config ../../packages/app/routes.config.ts --adapter @mismo/react-navigation --out src/navigation --types src/routes.gen.ts && tsc"
+  }
+}
+```
+
+## Rules
+
+React Navigation opens a screen by its URL alone, so it can't take two pages at one URL, such as `(a)/about` and `(b)/about`. See [rules](/docs/rules) for what each router can't take.

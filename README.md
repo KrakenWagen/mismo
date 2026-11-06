@@ -2,7 +2,7 @@
 
 Write your screens once. Run them on any stack.
 
-mismo shares screens, routes and navigation between a React Native app and a web app, while each app keeps its own router: Expo Router on native, and Next.js, TanStack Start or React Router on the web.
+mismo shares screens, routes and navigation between a React Native app and a web app, while each app keeps its own router: Expo Router or React Navigation on native, and Next.js, TanStack Start or React Router on the web.
 
 **Docs: [mismo.dev](https://mismo.dev)**
 
@@ -129,6 +129,7 @@ Requires Node.js 22.18 or later and React 19.
 | --- | --- |
 | [`@mismo/core`](packages/core) | The shared API, config, Vite plugin and CLI |
 | [`@mismo/expo`](packages/expo) | Expo Router (iOS and Android) |
+| [`@mismo/react-navigation`](packages/react-navigation) | React Navigation (iOS and Android) |
 | [`@mismo/next`](packages/next) | Next.js (App Router) |
 | [`@mismo/tanstack`](packages/tanstack) | TanStack Start |
 | [`@mismo/react-router`](packages/react-router) | React Router (framework mode) |

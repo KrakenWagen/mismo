@@ -7,7 +7,7 @@ Thanks for helping. This page covers how the repository is laid out and how to w
 | Folder | What it is |
 | --- | --- |
 | `packages/core` | `@mismo/core`: the shared API, config, Vite plugin and CLI |
-| `packages/expo`, `packages/next`, `packages/tanstack`, `packages/react-router` | `@mismo/*`: one package per router |
+| `packages/expo`, `packages/react-navigation`, `packages/next`, `packages/tanstack`, `packages/react-router` | `@mismo/*`: one package per router |
 | `examples` | The shared routes, and apps that build them on Next.js, TanStack Start and React Router |
 | `tests` | Tests across the packages |
 | `site` | [mismo.dev](https://mismo.dev): the landing page and docs |
@@ -36,7 +36,7 @@ pnpm build        # compiles each package to its dist with tsdown
 ## Making a change
 
 - **A router's behavior** lives in that router's package: its output, its rules and its runtime. Adding a router means adding a package with the same shape.
-- **Tests** go in `tests/src`. Outputs are tested by giving a model and comparing the files written. Where a router can check the result itself, the example apps do: they are built and served by Next.js, TanStack Start and React Router.
+- **Tests** go in `tests/src`. Outputs are tested by giving a model and comparing the files written. Where a router can check the result itself, the example apps do: they are built and served by Next.js, TanStack Start and React Router, and the React Navigation one is typechecked against the real packages.
 - **Docs** live in `site/src/content/docs`. Each package's `README.md` is what npm shows, so keep it short and point to the site.
 - **Run `pnpm typecheck` and `pnpm test`** before you open a pull request.
 

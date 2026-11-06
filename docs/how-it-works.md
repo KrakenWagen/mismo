@@ -32,7 +32,8 @@ mismo is not a router. It is the glue between routers, and a few decisions follo
  Expo Router folder ─▶ Expo's parser       ─┐                       ┌─▶ Expo Router files
  React Router config ─▶ React Router        ─┼─▶  tree of routes   ──┼─▶ Next.js app/ files
  your own format    ─▶ your input           ─┘    + typed routes      ├─▶ TanStack Start files
-                                                                      └─▶ React Router routes.ts
+                                                                      ├─▶ React Router routes.ts
+                                                                      └─▶ React Navigation navigators
 ```
 
 1. **An input** reads the routes with its router's own parser and returns the shared model. It translates and does not parse.
@@ -43,13 +44,14 @@ mismo is not a router. It is the glue between routers, and a few decisions follo
 
 The shared package knows nothing about the apps. It holds the screens and a `routes.config.ts`. Each app reads that config and writes its own routes, so adding an app never changes the shared package.
 
-## One route, four apps
+## One route, five apps
 
 Take one shared route, `orgs/[id].tsx`. Each app's build writes the files its router needs. These are simplified, and your build writes the real ones.
 
 | App | What the build writes |
 | --- | --- |
 | Expo Router | A file that re-exports the shared module: `export { default } from "…/orgs/[id]"`, in the same folders and groups. |
+| React Navigation | One `routes.tsx` of navigators. A layout becomes a navigator that renders the shared layout around its screens, and each page a screen with its URL as the linking path. |
 | TanStack Start | A file route: `export const Route = createFileRoute("/orgs/$id")({ component })`. TanStack's own generator then builds its route tree from these. |
 | Next.js | A server `page.tsx` that renders a client `mismo-page.tsx` inside a Suspense boundary. Layouts hand Next.js's `children` to `Slot`. |
 | React Router | A `routes.ts` the app spreads into its own, with stable route ids. |
@@ -115,4 +117,4 @@ The built-in inputs and outputs use the same interfaces a custom one does. An ad
 
 ## What it doesn't do yet
 
-mismo is in beta. The main gaps are catch-all and `+` routes in a shared folder, a shared root layout, and React Navigation on native. See [limits](https://mismo.dev/docs/rules#limits) for the whole list and what to do instead.
+mismo is in beta. The main gaps are catch-all and `+` routes in a shared folder, a shared root layout, and a device run of the React Navigation output. See [limits](https://mismo.dev/docs/rules#limits) for the whole list and what to do instead.

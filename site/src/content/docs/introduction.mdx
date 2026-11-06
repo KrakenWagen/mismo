@@ -1,6 +1,6 @@
 Teams with a React Native app and a web app already share a lot: components, hooks, data fetching, design tokens. What they usually can't share is the **screen** itself. Each app defines the screen's route in its own router's format, links to it with its own router's `Link`, and wires navigation into the shared code by hand. The shared part ends up being "everything inside the screen", and keeping the two apps' routes in step is a manual chore.
 
-mismo lets you write the whole screen once: the screen, the route it lives at, its layout, and every link and navigation call in it. Your native app runs it on Expo Router; your web app runs it on Next.js, TanStack Start or React Router.
+mismo lets you write the whole screen once: the screen, the route it lives at, its layout, and every link and navigation call in it. Your native app runs it on Expo Router or React Navigation; your web app runs it on Next.js, TanStack Start or React Router.
 
 ```tsx title="packages/app/routes/orgs/[id].tsx"
 import { Link, useParams } from "@mismo/core";

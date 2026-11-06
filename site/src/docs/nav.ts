@@ -59,6 +59,11 @@ export const sections: DocSection[] = [
         description: "Run your shared screens and routes in an Expo Router app.",
       },
       {
+        slug: "react-navigation",
+        title: "React Navigation",
+        description: "Run your shared screens and routes in a React Native app on React Navigation.",
+      },
+      {
         slug: "nextjs",
         title: "Next.js",
         description: "Run your shared screens and routes in a Next.js app.",

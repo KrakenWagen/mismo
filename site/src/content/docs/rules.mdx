@@ -27,12 +27,12 @@ An app's own router is always checked, whether it's listed or not. A router that
 
 ## What each router can take
 
-| | Expo Router | Next.js | TanStack Start | React Router |
-| --- | --- | --- | --- | --- |
-| Pages, params, layouts, index, groups | ✓ | ✓ | ✓ | ✓ |
-| Two pages at one URL, in different groups | ✓ | – | – | – |
-| `.` or `$` in a file or folder name | ✓ | ✓ | – | ✓ |
-| A name starting with `_` or `@`, or a group starting with `(.` | ✓ | – | ✓ | ✓ |
+| | Expo Router | React Navigation | Next.js | TanStack Start | React Router |
+| --- | --- | --- | --- | --- | --- |
+| Pages, params, layouts, index, groups | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Two pages at one URL, in different groups | ✓ | – | – | – | – |
+| `.` or `$` in a file or folder name | ✓ | ✓ | ✓ | – | ✓ |
+| A name starting with `_` or `@`, or a group starting with `(.` | ✓ | ✓ | – | ✓ | ✓ |
 
 Where a router would quietly treat a name as something else, such as `.` as a path separator on TanStack Start or `_` as a private folder on Next.js, mismo stops the build instead of letting the route change meaning.
 
@@ -64,5 +64,5 @@ Beyond the routers' rules, mismo has limits of its own. This is what it doesn't 
 
 ### Routers and versions
 
-- **Native is Expo Router only.** React Navigation isn't supported.
+- **React Navigation support is new.** It's covered by tests on the generated navigators and their URLs, and by a typecheck of an example app against the real packages. It hasn't been run on a device yet. A shared layout becomes a navigator, so a layout can't render something that isn't a navigator: tabs and a drawer are chosen with an option on the layout. See [React Navigation](/docs/react-navigation).
 - **Version ranges:** Expo Router `>=58 <59`, Next.js `>=16 <17`, React Router `>=8 <9`, TanStack Router `>=1.160`, React 19. See [routers](/docs/routers).

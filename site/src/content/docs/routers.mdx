@@ -3,12 +3,20 @@ Each app runs on one router, and installs that router's package next to `@mismo/
 | Router | Platform | Package | Versions | Run shared routes | Define shared routes |
 | --- | --- | --- | --- | --- | --- |
 | [Expo Router](/docs/expo-router) | iOS & Android | `@mismo/expo` | `>=58 <59`, React Native 0.79+ | ✓ | ✓ |
+| [React Navigation](/docs/react-navigation) | iOS & Android | `@mismo/react-navigation` | `>=7.5 <8`, React Native 0.79+ | ✓ | – |
 | [Next.js](/docs/nextjs) | Web | `@mismo/next` | `>=16 <17` | ✓ | – |
 | [TanStack Start](/docs/tanstack-start) | Web | `@mismo/tanstack` | TanStack Router `>=1.160` | ✓ | – |
 | [React Router](/docs/react-router) | Web | `@mismo/react-router` | `>=8 <9` | ✓ | ✓ |
 
 - **Run shared routes:** an app on this router can use your shared screens and routes.
 - **Define shared routes:** you can write your shared routes in this router's format. You pick one format for the whole project, and it doesn't limit which routers run them: routes written as an Expo Router folder run on Next.js too. See [defining routes](/docs/routes-folder#other-ways-to-define-routes).
+
+## Picking a native router
+
+Both run the same shared screens:
+
+- **Expo Router**, for file-based routes and Expo apps. It's what most new apps use, and you can write your shared routes in its format.
+- **React Navigation**, if your app is already on it, or isn't an Expo Router app. Each shared layout becomes a navigator, a native stack unless you choose tabs or a drawer.
 
 ## Picking a web router
 
