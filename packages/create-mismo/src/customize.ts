@@ -148,7 +148,7 @@ function workspace(dir: string, removed: Web[]) {
 }
 
 /**
- * The README, to match: the apps left, and no step to copy the starter. Best effort: a README that
+ * The README, to match: the apps left, and no step to get the starter. Best effort: a README that
  * no longer has these lines is left as it is.
  */
 function readme(dir: string, { web, native, name }: Choices) {
@@ -176,7 +176,8 @@ function readme(dir: string, { web, native, name }: Choices) {
     const running = Object.entries(titles).find(([, title]) => line.startsWith(`- **${title}:**`));
     if (running && !kept[running[0]]) continue;
 
-    if (/degit KrakenWagen\/mismo-starter/.test(line) || /^cd my-app\s*$/.test(line) || line.includes("(docs/removing-an-app.md)")) continue;
+    // The steps to get the starter: this project is the result of them.
+    if (/degit KrakenWagen\/mismo-starter|pnpm create mismo/.test(line) || /^cd my-app\s*$/.test(line) || line.includes("(docs/removing-an-app.md)")) continue;
 
     out.push(line);
   }

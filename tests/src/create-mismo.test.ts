@@ -55,6 +55,7 @@ packages
 
 \`\`\`sh
 pnpm dlx degit KrakenWagen/mismo-starter my-app  # Copy the starter
+pnpm create mismo my-app                         # Or: pick your apps
 cd my-app
 pnpm install                                     # Install dependencies
 pnpm dev                                         # Start every app
@@ -226,7 +227,7 @@ describe("customizing the starter", () => {
     expect(readme).not.toMatch(/native {16}|next {18}/);
     expect(readme).toContain("- **TanStack Start:** http://localhost:3001");
     expect(readme).not.toMatch(/\*\*Next\.js:\*\*|\*\*Expo:\*\*/);
-    expect(readme).not.toMatch(/degit|cd my-app|removing-an-app/);
+    expect(readme).not.toMatch(/degit|create mismo|cd my-app|removing-an-app/);
     expect(readme).toContain("pnpm install");
     expect(readme).toContain("[mismo docs](https://mismo.dev)");
 
