@@ -182,4 +182,20 @@ describe("route options on TanStack Start", () => {
     expect(read("shell.tsx")).toContain("import Component, { tanstack } from");
     expect(read("shell.tsx")).toContain("({ ...tanstack, component: Component })");
   });
+
+  it("spreads the server file's loader into the route, and keeps server code out of the module", () => {
+    const read = generate(tanstack, {
+      "orgs.tsx": `${screen}export const tanstack = { ssr: false };`,
+      "orgs.server.ts": "export const tanstack = { loader: async () => ({ orgs: [] }) };",
+    });
+    expect(read("orgs.tsx")).toMatch(/import \{ tanstack as server \} from ".*\/orgs\.server";/);
+    expect(read("orgs.tsx")).toContain("({ ...tanstack, ...server, component: Component })");
+
+    expect(() => generate(tanstack, { "a.tsx": `${screen}export const tanstack = { loader: () => 1 };` })).toThrow(
+      /`tanstack.loader` holds server code. Move it to the route's server file/,
+    );
+    expect(() => generate(tanstack, { "a.tsx": null, "a.server.ts": "export const tanstack = { ssr: false };" })).toThrow(
+      /`tanstack.ssr` isn't a server option/,
+    );
+  });
 });

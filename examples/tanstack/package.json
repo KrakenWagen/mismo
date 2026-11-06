@@ -1,0 +1,27 @@
+{
+  "name": "@mismo/example-tanstack",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "mismo's example on TanStack Start: the shared routes, built by TanStack Start itself.",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "typecheck": "mismo generate --config ../shared/routes.config.ts --adapter @mismo/tanstack --out src/routes --types src/routes.gen.ts && tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mismo/core": "workspace:*",
+    "@mismo/example-shared": "workspace:*",
+    "@mismo/tanstack": "workspace:*",
+    "@tanstack/react-router": "^1.170.46",
+    "@tanstack/react-start": "^1.169.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.4"
+  }
+}

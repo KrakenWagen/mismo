@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import {
+  exportedOptions,
   exportsName,
   type Files,
   GENERATED,
@@ -10,6 +11,8 @@ import {
   placesOf,
   type RouteOutput,
   type RouteRules,
+  type SharedRoute,
+  serverModule,
 } from "@mismo/core/adapter";
 
 /** What TanStack Router cannot express, from its file conventions. */
@@ -40,6 +43,13 @@ export const rules: RouteRules = {
  * module's `tanstack` export as options when it has one; TanStack's generator then builds its
  * route tree from them. A route module cannot export TanStack's `Route` itself: native would
  * import TanStack.
+ *
+ * Options that hold server code (`loader`, `beforeLoad`) come from the route's server file,
+ * `orgs/[id].server.ts`, as `export const tanstack = { loader, … }`, so the native app, which
+ * bundles the module but never the server file, never gets them. TanStack runs a loader in the
+ * browser too, on client-side navigation, so a loader's server-only work belongs in a
+ * `createServerFn` in the server file, which TanStack's compiler replaces with a call to the
+ * server in the browser's bundle.
  */
 export function output({ outDir, types }: { outDir: string; types: string }): RouteOutput {
   return {
@@ -69,14 +79,15 @@ export function output({ outDir, types }: { outDir: string; types: string }): Ro
 
         const from = importPath(path.join(context.outDir, ...parts), route.file);
         const options = exportsName(route.file, "tanstack");
+        const server = serverOptions(route);
 
         files.set(
           parts.join("/"),
           `${GENERATED}import { createFileRoute } from "@tanstack/react-router";
 
 import Component${options ? ", { tanstack }" : ""} from "${from}";
-
-export const Route = createFileRoute("${id}")({ ${options ? "...tanstack, " : ""}component: Component });
+${server ? `import { tanstack as server } from "${importPath(path.join(context.outDir, ...parts), server)}";\n` : ""}
+export const Route = createFileRoute("${id}")({ ${options ? "...tanstack, " : ""}${server ? "...server, " : ""}component: Component });
 `,
         );
       }
@@ -88,3 +99,28 @@ export const Route = createFileRoute("${id}")({ ${options ? "...tanstack, " : ""
 
 /** A segment as TanStack Router spells it: `:id` is `$id`. */
 const toTanstack = (segment: string) => (isParam(segment) ? `$${segment.slice(1)}` : segment);
+
+/** The options that hold server code: they live in the route's server file, never its module. */
+const SERVER_OPTIONS = new Set(["loader", "beforeLoad"]);
+
+/**
+ * The route's server file, when it sets options, after checking that server code is only there:
+ * the module is bundled by the native app. Returns the server file's path without extension.
+ */
+function serverOptions(route: SharedRoute): string | undefined {
+  for (const key of exportedOptions(route.file, "tanstack")?.keys() ?? []) {
+    if (SERVER_OPTIONS.has(key)) {
+      throw new Error(`${route.id}: \`tanstack.${key}\` holds server code. Move it to the route's server file, ${route.id}.server.ts, so the native app never bundles it.`);
+    }
+  }
+
+  const server = serverModule(route.file);
+  const options = server && exportedOptions(server, "tanstack");
+  if (!server || !options) return undefined;
+  for (const key of options.keys()) {
+    if (!SERVER_OPTIONS.has(key)) {
+      throw new Error(`${route.id}.server: \`tanstack.${key}\` isn't a server option. It takes ${[...SERVER_OPTIONS].join(", ")}; the rest go in the route's module.`);
+    }
+  }
+  return server;
+}

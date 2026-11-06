@@ -31,7 +31,7 @@ export default defineConfig({
 });
 ```
 
-Route options (`ssr`, `loader`, `head`) come from a shared route's `tanstack` export, typed with `TanstackRouteOptions`.
+Route options (`ssr`, `head`) come from a shared route's `tanstack` export, typed with `TanstackRouteOptions`. Options that hold server code (`loader`, `beforeLoad`) go in the route's server file, `orgs/[id].server.ts`, typed with `TanstackServerOptions`, which the native app never bundles. TanStack also runs a loader in the browser on client-side navigation, so keep its server-only work in a `createServerFn`. Start refuses `*.server.*` files in the browser's bundle, so let the shared routes' through in `vite.config.ts`: `tanstackStart({ importProtection: { client: { excludeFiles: ["**/shared/routes/**/*.server.*"] } } })`.
 
 See [Getting started](https://mismo.dev/docs/getting-started) for the whole setup: the shared routes package, and each app.
 

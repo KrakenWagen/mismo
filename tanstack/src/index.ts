@@ -1,7 +1,7 @@
 // `@mismo/tanstack`: mismo for TanStack Router and TanStack Start. Routes written out for a
 // TanStack app (`output`), and what TanStack Router cannot express (`rules`). The runtime is
 // `@mismo/tanstack/runtime`, pointed at by mismo's Vite plugin. A route's TanStack options are
-// its `tanstack` export, typed with `TanstackRouteOptions`.
+// its `tanstack` export, typed with `TanstackRouteOptions`; loaders go in its server file (`TanstackServerOptions`).
 import type { RouterAdapter } from "@mismo/core/adapter";
 
 import { output, rules } from "./output.ts";
@@ -12,4 +12,4 @@ export const tanstack = {
   output,
 } satisfies RouterAdapter;
 
-export type { TanstackRouteOptions } from "./options.ts";
+export type { TanstackRouteOptions, TanstackServerOptions } from "./options.ts";
