@@ -1,0 +1,46 @@
+{
+  "name": "create-mismo",
+  "version": "0.1.0-beta.1",
+  "description": "Start a mismo app: `pnpm create mismo` sets up a native app and a web app that share their screens and routes.",
+  "keywords": [
+    "mismo",
+    "create",
+    "starter",
+    "react-native",
+    "expo",
+    "nextjs",
+    "tanstack"
+  ],
+  "homepage": "https://mismo.dev",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-mismo": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsdown",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "giget": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "bin": {
+      "create-mismo": "./dist/index.js"
+    }
+  }
+}

@@ -91,7 +91,13 @@ routes/
 
 ## Setting it up
 
-In the package that holds your screens, install the core and the adapter of each router your apps use:
+To start a new project with a native app and a web app already wired up, run the starter's command and pick the apps you want:
+
+```sh
+pnpm create mismo my-app
+```
+
+To add mismo to an existing project, install the core and the adapter of each router your apps use, in the package that holds your screens:
 
 ```sh
 pnpm add @mismo/core @mismo/expo @mismo/next
@@ -133,6 +139,7 @@ Requires Node.js 22.18 or later and React 19.
 | [`@mismo/next`](packages/next) | Next.js (App Router) |
 | [`@mismo/tanstack`](packages/tanstack) | TanStack Start |
 | [`@mismo/react-router`](packages/react-router) | React Router (framework mode) |
+| [`create-mismo`](packages/create-mismo) | `pnpm create mismo`: a starter with the apps you pick |
 
 ## Learn more
 
