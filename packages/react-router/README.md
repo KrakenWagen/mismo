@@ -7,7 +7,7 @@ mismo for React Router (framework mode). [mismo](https://mismo.dev) shares scree
 ## Install
 
 ```sh
-npm i @mismo/core @mismo/react-router
+pnpm add @mismo/core @mismo/react-router
 ```
 
 ## Setup

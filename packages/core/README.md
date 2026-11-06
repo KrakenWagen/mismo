@@ -11,7 +11,7 @@ mismo shares screens, routes and navigation between a React Native app and a web
 In the package that holds your screens, install the core and the adapter of every router your apps use:
 
 ```sh
-npm i @mismo/core @mismo/expo @mismo/next
+pnpm add @mismo/core @mismo/expo @mismo/next
 ```
 
 ## Define the routes once

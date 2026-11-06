@@ -7,7 +7,7 @@ mismo for Next.js (App Router). [mismo](https://mismo.dev) shares screens, route
 ## Install
 
 ```sh
-npm i @mismo/core @mismo/next
+pnpm add @mismo/core @mismo/next
 ```
 
 ## Setup

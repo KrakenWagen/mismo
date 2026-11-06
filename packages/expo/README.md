@@ -7,7 +7,7 @@ mismo for Expo Router. [mismo](https://mismo.dev) shares screens, routes and nav
 ## Install
 
 ```sh
-npm i @mismo/core @mismo/expo
+pnpm add @mismo/core @mismo/expo
 ```
 
 ## Setup
