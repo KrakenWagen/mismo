@@ -9,6 +9,14 @@
     "routes"
   ],
   "homepage": "https://mismo.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KrakenWagen/mismo.git",
+    "directory": "packages/react-navigation"
+  },
+  "bugs": {
+    "url": "https://github.com/KrakenWagen/mismo/issues"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
