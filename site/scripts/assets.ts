@@ -1,5 +1,5 @@
-// The site's images: the social cards (Open Graph) for the home page and each docs page, and the
-// favicons. Drawn as HTML in the site's own fonts and colors, and photographed with the installed
+// The site's images: the social cards (Open Graph) for the home page and each docs page, the
+// favicons, and the README's banner (in ../docs/images). Drawn as HTML in the site's own fonts and colors, and photographed with the installed
 // Chrome, so they match the site. The output is committed to public/, so building and deploying
 // need no browser; run this again after changing a docs page's title or description:
 //
@@ -11,8 +11,10 @@ import { chromium } from "playwright-core";
 import { siExpo, siNextdotjs, siReactrouter, siTanstack } from "simple-icons";
 
 import { sections } from "../src/docs/nav.ts";
+import { navigationArrow } from "../src/lib/icons.ts";
 
 const publicDir = path.join(import.meta.dirname, "..", "public");
+const bannerDir = path.join(import.meta.dirname, "..", "..", "docs", "images");
 
 const fonts =
   "https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=block";
@@ -34,13 +36,14 @@ const logo = (icon: { path: string }) =>
 
 const frameworks = [
   ["Expo Router", siExpo],
+  ["React Navigation", navigationArrow],
   ["Next.js", siNextdotjs],
   ["TanStack Start", siTanstack],
   ["React Router", siReactrouter],
 ] as const;
 
 /** A 1200×630 card: the frame every social card shares, around its own content. */
-function card(content: string, footer: string) {
+function card(content: string, footer: string, corner = "") {
   return `<!doctype html>
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="${fonts}">
 <style>
@@ -57,17 +60,18 @@ function card(content: string, footer: string) {
     display: flex; flex-direction: column;
     background: radial-gradient(ellipse at 30% 40%, ${color.background} 35%, transparent 80%);
   }
-  .wordmark { font-family: "Instrument Serif", serif; font-size: 44px; letter-spacing: -0.02em; line-height: 1; }
+  .header { display: flex; align-items: baseline; justify-content: space-between; font-size: 24px; color: ${color.muted}; }
+  .wordmark { color: ${color.foreground}; font-family: "Instrument Serif", serif; font-size: 44px; letter-spacing: -0.02em; line-height: 1; }
   .content { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .footer { display: flex; align-items: center; justify-content: space-between; font-size: 24px; color: ${color.muted}; }
   .eyebrow { font-family: "Geist Mono", monospace; font-size: 22px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: ${color.brand}; margin-bottom: 22px; }
   .display { font-family: "Instrument Serif", serif; letter-spacing: -0.025em; line-height: 0.98; }
   em { color: ${color.brand}; }
-  .logos { display: flex; gap: 14px; }
-  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border: 1.5px solid ${color.border}; border-radius: 999px; background: ${color.card}; color: ${color.foreground}; font-size: 22px; font-weight: 500; }
+  .logos { display: flex; gap: 10px; flex-shrink: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border: 1.5px solid ${color.border}; border-radius: 999px; background: ${color.card}; color: ${color.foreground}; font-size: 19px; font-weight: 500; white-space: nowrap; }
 </style></head>
 <body><div class="frame">
-  <div class="wordmark">mismo</div>
+  <div class="header"><div class="wordmark">mismo</div>${corner}</div>
   <div class="content">${content}</div>
   <div class="footer">${footer}</div>
 </div></body></html>`;
@@ -76,9 +80,51 @@ function card(content: string, footer: string) {
 const home = card(
   `<div class="display" style="font-size: 104px; max-width: 980px;">Write your screens once.<br>Run them on <em>any</em> stack.</div>
    <div style="margin-top: 30px; font-size: 30px; color: ${color.muted}; max-width: 900px; line-height: 1.35;">Screens, routes and navigation, shared between React Native and the web.</div>`,
-  `<div class="logos">${frameworks.map(([name, icon]) => `<span class="pill">${logo(icon)}${name}</span>`).join("")}</div>
-   <span style="font-family: 'Geist Mono', monospace;">mismo.dev</span>`,
+  `<div class="logos">${frameworks.map(([name, icon]) => `<span class="pill">${logo(icon)}${name}</span>`).join("")}</div>`,
+  // Beside the wordmark: the pills fill the footer.
+  `<span style="font-family: 'Geist Mono', monospace;">mismo.dev</span>`,
 );
+
+/** The site's dark theme (src/styles.css), for the README's dark mode. */
+const darkColor: typeof color = {
+  background: "oklch(0.17 0.008 60)",
+  foreground: "oklch(0.95 0.006 80)",
+  muted: "oklch(0.7 0.01 70)",
+  border: "oklch(0.3 0.008 60)",
+  brand: "oklch(0.72 0.17 45)",
+  card: "oklch(0.2 0.008 60)",
+};
+
+/** The README's banner, 1280×440, in one theme: the wordmark, the headline, and the stacks, centered. */
+function banner(theme: typeof color) {
+  return `<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="${fonts}">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 1280px; height: 440px; overflow: hidden;
+    background: ${theme.background}; color: ${theme.foreground};
+    font-family: Geist, sans-serif;
+    background-image: radial-gradient(${theme.border} 1.4px, transparent 1.4px);
+    background-size: 28px 28px;
+  }
+  .frame {
+    position: absolute; inset: 0; padding: 44px 64px;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center;
+    background: radial-gradient(ellipse at 50% 50%, ${theme.background} 45%, transparent 90%);
+  }
+  .wordmark { font-family: "Instrument Serif", serif; font-size: 52px; letter-spacing: -0.02em; line-height: 1; }
+  .display { font-family: "Instrument Serif", serif; font-size: 92px; letter-spacing: -0.025em; line-height: 0.98; }
+  em { color: ${theme.brand}; }
+  .logos { display: flex; gap: 10px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 1.5px solid ${theme.border}; border-radius: 999px; background: ${theme.card}; color: ${theme.foreground}; font-size: 20px; font-weight: 500; white-space: nowrap; }
+</style></head>
+<body><div class="frame">
+  <div class="wordmark">mismo</div>
+  <div class="display">Write your screens once.<br>Run them on <em>any</em> stack.</div>
+  <div class="logos">${frameworks.map(([name, icon]) => `<span class="pill">${logo(icon)}${name}</span>`).join("")}</div>
+</div></body></html>`;
+}
 
 function docsCard(section: string, title: string, description: string, slug: string) {
   return card(
@@ -119,6 +165,17 @@ async function shoot(html: string, file: string, width: number, height: number, 
   console.log(`  ${file}`);
 }
 
+/** A page as a PNG at an exact path, at `scale` times the size, for images shown smaller than they are. */
+async function shootTo(html: string, out: string, width: number, height: number, scale: number) {
+  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale });
+  await page.setContent(html, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  mkdirSync(path.dirname(out), { recursive: true });
+  await page.screenshot({ path: out });
+  await page.close();
+  console.log(`  ${path.relative(path.join(import.meta.dirname, "..", ".."), out)}`);
+}
+
 rmSync(path.join(publicDir, "og"), { recursive: true, force: true });
 console.log("Social cards:");
 await shoot(home, "og.png", 1200, 630);
@@ -127,6 +184,10 @@ for (const section of sections) {
     await shoot(docsCard(section.title, page.title, page.description, page.slug), `og/docs/${page.slug}.png`, 1200, 630);
   }
 }
+
+console.log("README banner:");
+await shootTo(banner(color), path.join(bannerDir, "banner-light.png"), 1280, 440, 2);
+await shootTo(banner(darkColor), path.join(bannerDir, "banner-dark.png"), 1280, 440, 2);
 
 console.log("Icons:");
 await shoot(icon(32, 7), "favicon-32.png", 32, 32, true);
