@@ -1,7 +1,8 @@
 import { ArrowDown, Compass, FileCode2, Folder, type LucideIcon, Route, ShieldCheck, Split } from "lucide-react";
 import type { ReactNode } from "react";
-import { type SimpleIcon, siExpo, siNextdotjs, siReactrouter, siTanstack } from "simple-icons";
+import { siExpo, siNextdotjs, siReactrouter, siTanstack } from "simple-icons";
 
+import { type LogoIcon, navigationArrow } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 // What mismo shares, as one grid. The tall cell is the core: one routes folder, and each platform
@@ -33,7 +34,7 @@ function Cell({
   );
 }
 
-function Logo({ icon, className }: { icon: SimpleIcon; className?: string }) {
+function Logo({ icon, className }: { icon: LogoIcon; className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={cn("size-4 shrink-0 fill-current", className)} aria-hidden>
       <path d={icon.path} />
@@ -58,7 +59,13 @@ const routes = [
 ];
 
 const platforms = [
-  { url: "acme://orgs/acme", stacks: [{ name: "Expo Router", icon: siExpo }] },
+  {
+    url: "acme://orgs/acme",
+    stacks: [
+      { name: "Expo Router", icon: siExpo },
+      { name: "React Navigation", icon: navigationArrow },
+    ],
+  },
   {
     url: "acme.app/orgs/acme",
     stacks: [

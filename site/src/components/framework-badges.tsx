@@ -1,19 +1,21 @@
-import { type SimpleIcon, siExpo, siNextdotjs, siReact, siReactrouter, siTanstack } from "simple-icons";
+import { siExpo, siNextdotjs, siReact, siReactrouter, siTanstack } from "simple-icons";
 
+import { type LogoIcon, navigationArrow } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 // The frameworks mismo runs on, as badges around the hero's headline. Logos from Simple Icons
 // (CC0), drawn in the text color so they sit quietly on the page.
 
-const frameworks: { name: string; icon: SimpleIcon; position: string; delay: string }[] = [
+const frameworks: { name: string; icon: LogoIcon; position: string; delay: string }[] = [
   { name: "Expo Router", icon: siExpo, position: "left-[2%] top-[6%]", delay: "0s" },
   { name: "React Native", icon: siReact, position: "left-[-2%] top-[52%]", delay: "-2s" },
+  { name: "React Navigation", icon: navigationArrow, position: "left-[5%] top-[80%]", delay: "-5s" },
   { name: "Next.js", icon: siNextdotjs, position: "right-[1%] top-[2%]", delay: "-4s" },
   { name: "TanStack Start", icon: siTanstack, position: "right-[-3%] top-[42%]", delay: "-1s" },
   { name: "React Router", icon: siReactrouter, position: "right-[6%] top-[80%]", delay: "-3s" },
 ];
 
-function Logo({ icon, className }: { icon: SimpleIcon; className?: string }) {
+function Logo({ icon, className }: { icon: LogoIcon; className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={cn("size-4 shrink-0 fill-current", className)} aria-hidden>
       <path d={icon.path} />
@@ -21,7 +23,7 @@ function Logo({ icon, className }: { icon: SimpleIcon; className?: string }) {
   );
 }
 
-function Badge({ name, icon, className, style }: { name: string; icon: SimpleIcon; className?: string; style?: React.CSSProperties }) {
+function Badge({ name, icon, className, style }: { name: string; icon: LogoIcon; className?: string; style?: React.CSSProperties }) {
   return (
     <span
       className={cn(

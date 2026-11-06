@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import highlighted from "virtual:highlighted-snippets";
 
+import { navigationArrow } from "@/lib/icons";
 import { github, site } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
@@ -167,6 +168,7 @@ function Solves() {
 
 const guides = [
   { name: "Expo Router", platform: "iOS & Android", icon: siExpo, slug: "expo-router" },
+  { name: "React Navigation", platform: "iOS & Android", icon: navigationArrow, slug: "react-navigation" },
   { name: "Next.js", platform: "Web", icon: siNextdotjs, slug: "nextjs" },
   { name: "TanStack Start", platform: "Web", icon: siTanstack, slug: "tanstack-start" },
   { name: "React Router", platform: "Web", icon: siReactrouter, slug: "react-router" },
@@ -194,13 +196,13 @@ function GetStarted() {
         </div>
       </div>
 
-      <div className="reveal-on-scroll mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="reveal-on-scroll mx-auto mt-14 flex max-w-4xl flex-wrap justify-center gap-3">
         {guides.map((guide) => (
           <Link
             key={guide.slug}
             to="/docs/$slug"
             params={{ slug: guide.slug }}
-            className="group flex items-center gap-3 rounded-xl border bg-card px-4 py-3 transition hover:border-foreground/25"
+            className="group flex w-full items-center gap-3 rounded-xl border bg-card px-4 py-3 transition hover:border-foreground/25 sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.5rem)]"
           >
             <svg viewBox="0 0 24 24" className="size-5 shrink-0 fill-current" aria-hidden>
               <path d={guide.icon.path} />
