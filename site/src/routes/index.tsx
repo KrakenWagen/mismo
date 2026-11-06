@@ -112,7 +112,7 @@ function Hero() {
               </Button>
             </Reveal>
             <Reveal delay={280}>
-              <InstallCommand className="mx-auto mt-6" />
+              <InstallCommand create className="mx-auto mt-6" />
             </Reveal>
             <Reveal delay={350}>
               <BadgeRow className="mt-8" />
@@ -180,8 +180,15 @@ function GetStarted() {
       <div className="reveal-on-scroll mx-auto flex max-w-3xl flex-col items-center text-center">
         <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.18em] text-brand">Get started</p>
         <h2 className="font-display text-4xl leading-[1.05] tracking-tight text-balance sm:text-5xl">Start with one screen.</h2>
-        <p className="mt-5 text-lg text-pretty text-muted-foreground">Install, then follow the guide for your stack.</p>
-        <InstallCommand className="mt-8" />
+        <p className="mt-5 text-lg text-pretty text-muted-foreground">Start a project with one command, then follow the guide for your stack.</p>
+        <InstallCommand create className="mt-8" />
+        <p className="mt-3 text-sm text-muted-foreground">
+          Already have an app?{" "}
+          <Link to="/docs/$slug" params={{ slug: "getting-started" }} hash="set-it-up-yourself" className="underline underline-offset-4 hover:text-foreground">
+            Add mismo to it
+          </Link>
+          .
+        </p>
         <div className="mt-6 flex w-full flex-col items-center justify-center gap-3 sm:flex-row">
           <Button asChild size="lg" className="h-10 w-full sm:w-auto">
             <Link to="/docs/$slug" params={{ slug: "getting-started" }}>

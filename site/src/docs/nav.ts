@@ -16,7 +16,7 @@ export const sections: DocSection[] = [
       {
         slug: "getting-started",
         title: "Getting started",
-        description: "A shared routes package, a web app and an Expo app, from install to the first link.",
+        description: "Start a project with one command, or set up a shared routes package and your apps by hand.",
       },
     ],
   },

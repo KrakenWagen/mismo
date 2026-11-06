@@ -1,8 +1,28 @@
-<Callout>
-Starting a new project? `pnpm create mismo my-app` sets this layout up for you, with the web and native apps you pick, from a small working app. This guide shows how the parts fit, and how to add mismo to an app you already have.
-</Callout>
+## Start a new project
 
-This guide sets up a common layout: a shared package that holds the screens and the routes, a web app, and an Expo native app, in one workspace. Other layouts work too, as long as each app can reach the shared config.
+<Install create />
+
+The command sets up a working app: a shared package with the routes and screens, and the apps you pick, all running the same small notes app. It asks which web app to keep (Next.js, TanStack Start, or both), whether to keep the Expo native app, and whether to install the dependencies and start a git repository.
+
+Anything you pass on the command line isn't asked:
+
+| Option | |
+| --- | --- |
+| `--web <apps>` | The web apps to keep: `next`, `tanstack` or `both`. |
+| `--native` / `--no-native` | Keep the Expo native app, or remove it. |
+| `--install` / `--no-install` | Install dependencies, or skip it. |
+| `--git` / `--no-git` | Start a git repository, or skip it. |
+| `-y`, `--yes` | Take the defaults for anything not given, and ask nothing. |
+
+```sh
+pnpm create mismo my-app --web next --no-native --yes
+```
+
+Then `cd my-app` and run `pnpm dev`. It needs Node.js 22.18 or later, and pnpm 10 or later to install: the starter is a pnpm workspace.
+
+## Set it up yourself
+
+To see how the parts fit, or to add mismo to an app you already have, set it up by hand. This guide sets up a common layout: a shared package that holds the screens and the routes, a web app, and an Expo native app, in one workspace. Other layouts work too, as long as each app can reach the shared config.
 
 ```text
 packages/app/        the screens and routes.config.ts

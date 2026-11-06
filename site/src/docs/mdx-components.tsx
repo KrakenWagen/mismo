@@ -164,5 +164,6 @@ export const mdxComponents: MDXComponents = {
   Tabs,
   Tab,
   // `<Install packages="@mismo/core @mismo/next" title="apps/web" />`: in the reader's package manager.
-  Install: (props: { packages: string; title?: string }) => <InstallCommand {...props} className="my-6 max-w-none" />,
+  // `<Install create />` is the command that starts a new project.
+  Install: (props: { packages?: string; create?: boolean; title?: string }) => <InstallCommand {...props} className="my-6 max-w-none" />,
 };

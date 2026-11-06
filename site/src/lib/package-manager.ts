@@ -56,6 +56,14 @@ export function usePackageManager(): PackageManager {
   );
 }
 
+/**
+ * The command that starts a project with `manager`: `pnpm create mismo my-app`. npm asks for
+ * `@latest`, so it doesn't run an older copy it cached.
+ */
+export function createCommand(manager: PackageManager, name = "my-app"): string {
+  return manager === "npm" ? `npm create mismo@latest ${name}` : `${manager} create mismo ${name}`;
+}
+
 /** The command that adds `packages` with `manager`. */
 export function installCommand(manager: PackageManager, packages: string): string {
   return manager === "npm" ? `npm i ${packages}` : `${manager} add ${packages}`;

@@ -1,5 +1,5 @@
 import { CopyButton } from "@/components/code-block";
-import { installCommand, packageManagers, setPackageManager, usePackageManager } from "@/lib/package-manager";
+import { createCommand, installCommand, packageManagers, setPackageManager, usePackageManager } from "@/lib/package-manager";
 import { cn } from "@/lib/utils";
 
 // An install command, for whichever package manager the reader uses. The choice is shared by every
@@ -7,17 +7,20 @@ import { cn } from "@/lib/utils";
 
 export function InstallCommand({
   packages = "@mismo/core @mismo/expo @mismo/next",
+  create = false,
   title,
   className,
 }: {
   /** The packages to add, space-separated. Defaults to the common pair of apps: Expo and Next.js. */
   packages?: string;
+  /** Show the command that starts a new project instead (`pnpm create mismo`). */
+  create?: boolean;
   /** Where to run it, such as `apps/web`, shown beside the tabs. */
   title?: string;
   className?: string;
 }) {
   const manager = usePackageManager();
-  const command = installCommand(manager, packages);
+  const command = create ? createCommand(manager) : installCommand(manager, packages);
 
   return (
     <div className={cn("w-full max-w-xl overflow-hidden rounded-xl border bg-card text-left shadow-xs", className)}>
