@@ -1,4 +1,0 @@
-{
-  // The published build: see configs/tsconfig.build.json.
-  "extends": ["./tsconfig.json", "../../configs/tsconfig.build.json"]
-}

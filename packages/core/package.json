@@ -36,7 +36,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && node ../../scripts/fix-declarations.mjs dist",
+    "build": "tsdown",
     "prepack": "pnpm run build"
   },
   "peerDependencies": {

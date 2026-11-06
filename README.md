@@ -15,7 +15,6 @@ Docs: [mismo.dev](https://mismo.dev). Design notes: [DESIGN.md](DESIGN.md).
 | `tests` | Tests across the packages |
 | `examples` | Shared routes, and apps that build them on Next.js and React Router |
 | `site` | mismo.dev: the landing page and docs |
-| `scripts` | Build helpers |
 
 ## Working on it
 
