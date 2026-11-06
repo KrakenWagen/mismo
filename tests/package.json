@@ -13,6 +13,11 @@
     "@mismo/next": "workspace:*",
     "@mismo/react-router": "workspace:*",
     "@mismo/tanstack": "workspace:*",
-    "@mismo/core": "workspace:*"
+    "@mismo/core": "workspace:*",
+    "@mismo/react-navigation": "workspace:*"
+  },
+  "devDependencies": {
+    "@react-navigation/core": "^7",
+    "esbuild": "^0.28.2"
   }
 }
