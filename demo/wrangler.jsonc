@@ -1,0 +1,17 @@
+// demo.mismo.dev: the starter's web app as static files, and its native app for Expo Go.
+//   pnpm run deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mismo-demo",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // The root can be a request for the native app, and the native app's files are checked for a
+    // missing one (see src/handler.ts). Everything else, the web app, stays a free asset request.
+    "run_worker_first": ["/", "/native/*"]
+  },
+  "routes": [{ "pattern": "demo.mismo.dev", "custom_domain": true }]
+}

@@ -2,6 +2,7 @@ packages:
   - "packages/*"
   - "tests"
   - "site"
+  - "demo"
   - "examples/*"
 
 # One copy of React for the whole workspace: a second copy makes hooks see a null dispatcher.

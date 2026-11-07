@@ -1,0 +1,9 @@
+{
+  "extends": "../configs/tsconfig.web.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  // src/worker.ts imports the manifests the build writes, so it isn't there until a build has run.
+  "include": ["src", "build.ts"],
+  "exclude": ["src/worker.ts"]
+}

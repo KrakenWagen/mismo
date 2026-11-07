@@ -1,0 +1,40 @@
+#mismo-demo-panel, #mismo-demo-launcher {
+  --bg: #fff; --fg: #1c1c1e; --muted: #6b6b70; --line: #e5e5e1; --accent: #b4540a;
+  position: fixed; right: 16px; bottom: 16px; z-index: 1000; box-sizing: border-box;
+  border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  #mismo-demo-panel, #mismo-demo-launcher { --bg: #1f1f23; --fg: #f2f2f3; --muted: #a0a0a8; --line: #303036; --accent: #f5a35c; }
+}
+
+/* The panel: a QR code to scan. */
+#mismo-demo-panel { width: 216px; padding: 14px; border-radius: 14px; box-shadow: 0 8px 28px rgba(0, 0, 0, .14); }
+#mismo-demo-panel strong { display: block; padding-right: 20px; font-size: 14px; }
+#mismo-demo-panel p { margin: 4px 0 0; color: var(--muted); }
+#mismo-demo-panel a { color: var(--accent); text-decoration: none; font-weight: 500; }
+#mismo-demo-panel .qr { margin: 10px 0 6px; padding: 8px; border-radius: 8px; background: #fff; line-height: 0; }
+#mismo-demo-panel .qr svg { width: 100%; height: auto; }
+#mismo-demo-panel .open { display: none; }
+#mismo-demo-panel button {
+  position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px;
+  background: transparent; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer;
+}
+
+/* The launcher: what is left in the corner when the panel is closed. */
+#mismo-demo-launcher {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 13px 0 11px;
+  border-radius: 999px; box-shadow: 0 4px 16px rgba(0, 0, 0, .12); font-weight: 500; line-height: 1; cursor: pointer;
+}
+#mismo-demo-launcher svg { width: 15px; height: 15px; flex: none; }
+
+/* A phone, or a narrow window: no QR code, since you can't scan your own screen. A button opens Expo Go. */
+@media (max-width: 839px), (pointer: coarse) {
+  #mismo-demo-panel { left: 12px; right: 12px; bottom: 56px; width: auto; }
+  #mismo-demo-panel .qr, #mismo-demo-panel .scan { display: none; }
+  #mismo-demo-panel .open {
+    display: block; margin: 10px 0 6px; padding: 9px; border-radius: 9px; text-align: center;
+    background: var(--fg); color: var(--bg);
+  }
+  #mismo-demo-launcher { right: 12px; bottom: 56px; }
+}
