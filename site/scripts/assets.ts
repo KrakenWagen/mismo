@@ -1,20 +1,30 @@
 // The site's images: the social cards (Open Graph) for the home page and each docs page, the
-// favicons, and the README's banner (in ../docs/images). Drawn as HTML in the site's own fonts and colors, and photographed with the installed
-// Chrome, so they match the site. The output is committed to public/, so building and deploying
-// need no browser; run this again after changing a docs page's title or description:
+// favicons, and the README's banner (in ../docs/images). Drawn as HTML in the site's own fonts and
+// colors, and photographed with the installed Chrome, so they match the site.
 //
-//   pnpm assets
-import { mkdirSync, rmSync } from "node:fs";
+// The output is committed, so building and deploying need no browser. The cards go in src/assets/og,
+// which the build names by a hash of their contents like any other asset: a changed card is a new
+// address, so link previews update, and an unchanged one is cached for good (src/lib/og.ts).
+//
+// An image is only drawn again when what it is drawn from has changed (assets.lock.json), as drawing
+// is never quite the same twice and a new image is a new address. After changing a docs page's title or
+// description, run this again; --force draws everything, such as after a font changes:
+//
+//   pnpm assets [--force]
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-
 import { chromium } from "playwright-core";
 import { siExpo, siNextdotjs, siReactrouter, siTanstack } from "simple-icons";
 
 import { sections } from "../src/docs/nav.ts";
 import { navigationArrow } from "../src/lib/icons.ts";
 
+const root = path.join(import.meta.dirname, "..", "..");
 const publicDir = path.join(import.meta.dirname, "..", "public");
-const bannerDir = path.join(import.meta.dirname, "..", "..", "docs", "images");
+const cardsDir = path.join(import.meta.dirname, "..", "src", "assets", "og");
+const bannerDir = path.join(root, "docs", "images");
+const lockFile = path.join(import.meta.dirname, "assets.lock.json");
 
 const fonts =
   "https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=block";
@@ -154,44 +164,56 @@ const icon = (size: number, radius: number) => `<!doctype html>
 
 const browser = await chromium.launch({ channel: "chrome" });
 
-async function shoot(html: string, file: string, width: number, height: number, transparent = false) {
-  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
-  await page.setContent(html, { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
-  const out = path.join(publicDir, file);
-  mkdirSync(path.dirname(out), { recursive: true });
-  await page.screenshot({ path: out, omitBackground: transparent });
-  await page.close();
-  console.log(`  ${file}`);
-}
+const force = process.argv.includes("--force");
+const lock: Record<string, string> = existsSync(lockFile) ? JSON.parse(readFileSync(lockFile, "utf8")) : {};
+const inputs: Record<string, string> = {};
 
-/** A page as a PNG at an exact path, at `scale` times the size, for images shown smaller than they are. */
-async function shootTo(html: string, out: string, width: number, height: number, scale: number) {
+/** An image from a page, at `scale` times its size, unless it is already drawn from this same page. */
+async function shoot(html: string, out: string, { width, height, scale = 1, transparent = false }: { width: number; height: number; scale?: number; transparent?: boolean }) {
+  const name = path.relative(root, out);
+  inputs[name] = createHash("sha256").update(JSON.stringify([html, width, height, scale, transparent])).digest("hex").slice(0, 16);
+
+  if (!force && lock[name] === inputs[name] && existsSync(out)) {
+    console.log(`  ${name} (unchanged)`);
+    return;
+  }
+
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale });
   await page.setContent(html, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   mkdirSync(path.dirname(out), { recursive: true });
-  await page.screenshot({ path: out });
+  await page.screenshot({ path: out, omitBackground: transparent });
   await page.close();
-  console.log(`  ${path.relative(path.join(import.meta.dirname, "..", ".."), out)}`);
+  console.log(`  ${name}`);
 }
 
-rmSync(path.join(publicDir, "og"), { recursive: true, force: true });
 console.log("Social cards:");
-await shoot(home, "og.png", 1200, 630);
+await shoot(home, path.join(cardsDir, "home.png"), { width: 1200, height: 630 });
 for (const section of sections) {
   for (const page of section.pages) {
-    await shoot(docsCard(section.title, page.title, page.description, page.slug), `og/docs/${page.slug}.png`, 1200, 630);
+    await shoot(docsCard(section.title, page.title, page.description, page.slug), path.join(cardsDir, "docs", `${page.slug}.png`), { width: 1200, height: 630 });
+  }
+}
+
+// A card for a page that is gone has no place in the build.
+const wanted = new Set(Object.keys(inputs));
+const cards = (dir: string): string[] =>
+  existsSync(dir) ? readdirSync(dir, { withFileTypes: true }).flatMap((entry) => (entry.isDirectory() ? cards(path.join(dir, entry.name)) : [path.join(dir, entry.name)])) : [];
+for (const file of cards(cardsDir)) {
+  if (!wanted.has(path.relative(root, file))) {
+    rmSync(file);
+    console.log(`  ${path.relative(root, file)} (removed)`);
   }
 }
 
 console.log("README banner:");
-await shootTo(banner(color), path.join(bannerDir, "banner-light.png"), 1280, 440, 2);
-await shootTo(banner(darkColor), path.join(bannerDir, "banner-dark.png"), 1280, 440, 2);
+await shoot(banner(color), path.join(bannerDir, "banner-light.png"), { width: 1280, height: 440, scale: 2 });
+await shoot(banner(darkColor), path.join(bannerDir, "banner-dark.png"), { width: 1280, height: 440, scale: 2 });
 
 console.log("Icons:");
-await shoot(icon(32, 7), "favicon-32.png", 32, 32, true);
-await shoot(icon(180, 0), "apple-touch-icon.png", 180, 180); // iOS rounds the corners itself.
-await shoot(icon(512, 112), "icon-512.png", 512, 512, true);
+await shoot(icon(32, 7), path.join(publicDir, "favicon-32.png"), { width: 32, height: 32, transparent: true });
+await shoot(icon(180, 0), path.join(publicDir, "apple-touch-icon.png"), { width: 180, height: 180 }); // iOS rounds the corners itself.
+await shoot(icon(512, 112), path.join(publicDir, "icon-512.png"), { width: 512, height: 512, transparent: true });
 
 await browser.close();
+writeFileSync(lockFile, `${JSON.stringify(Object.fromEntries(Object.entries(inputs).sort(([a], [b]) => a.localeCompare(b))), null, 2)}\n`);

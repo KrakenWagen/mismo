@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-r
 import type { ReactNode } from "react";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ogImage } from "@/lib/og";
 import { site } from "@/lib/site";
 
 import appCss from "../styles.css?url";
@@ -35,14 +36,14 @@ export const Route = createRootRoute({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:url", content: `${site}/` },
-      { property: "og:image", content: `${site}/og.png` },
+      { property: "og:image", content: ogImage("home") },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "mismo: Write your screens once. Run them on any stack." },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      { name: "twitter:image", content: `${site}/og.png` },
+      { name: "twitter:image", content: ogImage("home") },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -5,6 +5,7 @@ import { contentOf } from "@/docs/content";
 import { mdxComponents } from "@/docs/mdx-components";
 import { neighborsOf, pageOf, sections } from "@/docs/nav";
 
+import { ogImage } from "@/lib/og";
 import { site } from "@/lib/site";
 
 export const Route = createFileRoute("/docs/$slug")({
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/docs/$slug")({
     if (!loaderData) return {};
     const title = `${loaderData.title} · mismo`;
     const url = `${site}/docs/${loaderData.slug}/`;
-    const image = `${site}/og/docs/${loaderData.slug}.png`;
+    const image = ogImage(`docs/${loaderData.slug}`);
     return {
       meta: [
         { title },
