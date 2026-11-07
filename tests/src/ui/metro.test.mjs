@@ -28,3 +28,12 @@ test("Uniwind's internals resolve to real files", () => {
   assert.match(file, /uniwind[\\/]src[\\/]core[\\/]context$/);
   assert.ok(fs.existsSync(`${file}.ts`));
 });
+
+// Metro only runs a "before main" module that's in the bundle, and the native entry is what puts it
+// there. A build drops a bare import of a module that the package calls side-effect free.
+test("the safe-area module stays in the native bundle once built", () => {
+  const { sideEffects } = require("./package.json");
+  assert.ok(Array.isArray(sideEffects), "sideEffects must list the modules that run on import");
+  assert.ok(sideEffects.some((file) => /dist\/safe-areas\.native\.js$/.test(file)), "dist/safe-areas.native.js");
+  assert.match(fs.readFileSync(require.resolve("./src/index.native.ts"), "utf8"), /^import "\.\/safe-areas\.native\.ts";$/m);
+});

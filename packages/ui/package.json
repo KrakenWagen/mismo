@@ -25,7 +25,10 @@
     "directory": "packages/ui"
   },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/safe-areas.native.ts",
+    "./dist/safe-areas.native.js"
+  ],
   "files": [
     "dist",
     "integrations",
