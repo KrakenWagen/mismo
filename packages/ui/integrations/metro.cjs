@@ -1,10 +1,13 @@
 // Native's bundler setup: Uniwind compiles the app's global CSS to a stylesheet at build time.
+const fs = require("node:fs");
 const path = require("node:path");
 const { withUniwindConfig } = require("uniwind/metro");
 
 const UNIWIND = path.dirname(require.resolve("uniwind/package.json"));
 const INTERNAL = "uniwind/internal/";
-const SAFE_AREAS = path.join(__dirname, "../src/safe-areas.native.ts");
+// The published package has it built, in `dist`; in this repo it's the source.
+const BUILT = path.join(__dirname, "../dist/safe-areas.native.js");
+const SAFE_AREAS = fs.existsSync(BUILT) ? BUILT : path.join(__dirname, "../src/safe-areas.native.ts");
 
 /**
  * Wrap your whole Metro config with this, as Uniwind has to go last.

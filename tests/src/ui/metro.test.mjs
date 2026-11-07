@@ -11,7 +11,7 @@ const configure = (serializer) => withUI({ projectRoot: process.cwd(), resolver:
 test("safe areas are set up before the app starts, after what ran already", () => {
   const modules = configure({ getModulesRunBeforeMainModule: () => ["core"] }).serializer.getModulesRunBeforeMainModule("entry");
   assert.equal(modules[0], "core");
-  assert.match(modules[1], /safe-areas\.native\.ts$/);
+  assert.match(modules[1], /safe-areas\.native\.(ts|js)$/);
   assert.ok(fs.existsSync(modules[1]));
 });
 

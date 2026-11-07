@@ -73,7 +73,7 @@ Keep your own resets in `@layer base` there, as rules outside a layer beat every
 
 Then add what your stack needs:
 
-**Vite** (TanStack Start and others)
+**Vite** (TanStack Start and others), which needs `vite-plugin-babel` too
 
 ```ts
 import { ui } from "@mismo/ui/vite";
@@ -108,7 +108,7 @@ module.exports = withUI(config, { cssEntryFile: "./src/global.css" });
 ## Files
 
 ```
-src/index.ts          # Web entry, and the types for every platform
+src/index.ts          # Web entry, and the types for every platform (published built, in dist/)
 src/index.native.ts   # Native entry: `className` through Uniwind
 src/safe-areas.native.ts  # Native: keeps safe-area utilities in step with the device
 src/states.ts         # Native: `active:` and `focus:` in React Strict DOM's shape
