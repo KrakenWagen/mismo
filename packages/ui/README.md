@@ -26,17 +26,13 @@ import { css, html } from "@mismo/ui";
 
 ## States
 
-`active:`, `focus:` and `disabled:` work on every platform. The web uses CSS. On native, each element's classes become React Strict DOM's `{ default, ":active", ":focus" }` shape, which it already tracks for `css.create`. Only elements with those classes listen for presses or focus, and a press re-renders only that element.
+`active:`, `focus:` and `disabled:` work on every platform. The web uses CSS. On native, each element's classes become React Strict DOM's `{ default, ":active", ":focus" }` shape, which it already tracks for `css.create`. Only elements with those classes listen for presses or focus, and a press re-renders only that element. `hover:` isn't supported on native: for iPad pointers and Android mice, use `css.create` with `":hover"`.
 
 This relies on three of Uniwind's internals, listed in `src/uniwind-internals.d.ts`, which is why Uniwind is pinned to an exact version. `pnpm test` fails if an upgrade changes them, or if React Strict DOM's `merge()` stops taking compiled classes. It doesn't render on a device, so check `active:` and `focus:` there too after an upgrade.
 
-## What doesn't work on native yet
+## Which classes work
 
-- `hover:`, which does nothing there. For iPad pointers and Android mice, use `css.create` with `":hover"`.
-- `group-*:` and `peer-*:`, which depend on another element's state.
-- `truncate` and `line-clamp-*`.
-
-Classes that Uniwind doesn't support do nothing. See [its docs](https://docs.uniwind.dev/class-names).
+All of Tailwind's, on the web. On native, most do, and [CLASSES.md](https://github.com/KrakenWagen/mismo/blob/main/packages/ui/CLASSES.md) lists the ones that don't, by Tailwind's own groups. The biggest gaps are `hover:`, `group-*:` and `peer-*:`, grid, `space-*` and `divide-*` (use `gap-*`), and `truncate` and `line-clamp-*`. A class that Uniwind doesn't support does nothing, without an error.
 
 ## Safe areas
 
@@ -108,6 +104,7 @@ module.exports = withUI(config, { cssEntryFile: "./src/global.css" });
 ## Files
 
 ```
+CLASSES.md            # Which Tailwind classes work on native
 src/index.ts          # Web entry, and the types for every platform (published built, in dist/)
 src/index.native.ts   # Native entry: `className` through Uniwind
 src/safe-areas.native.ts  # Native: keeps safe-area utilities in step with the device
