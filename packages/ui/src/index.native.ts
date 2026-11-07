@@ -47,6 +47,6 @@ function withClassName(Element: ComponentType<any>) {
 
 export const html = Object.fromEntries(
   Object.entries(strictHtml).map(([tag, Element]) => [tag, withClassName(Element as ComponentType<any>)]),
-) as unknown as Html;
+) as Html;
 export { css };
 export type * from "./types.ts";

@@ -5,6 +5,6 @@ import { css, html as strictHtml } from "react-strict-dom";
 
 import type { Html } from "./types.ts";
 
-export const html = strictHtml as unknown as Html;
+export const html: Html = strictHtml;
 export { css };
 export type * from "./types.ts";
