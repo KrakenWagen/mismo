@@ -14,7 +14,8 @@
     "@mismo/react-router": "workspace:*",
     "@mismo/tanstack": "workspace:*",
     "@mismo/core": "workspace:*",
-    "@mismo/react-navigation": "workspace:*"
+    "@mismo/react-navigation": "workspace:*",
+    "@mismo/ui": "workspace:*"
   },
   "devDependencies": {
     "@react-navigation/core": "^7",

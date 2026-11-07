@@ -1,0 +1,19 @@
+/*
+ * Import this first in each app's global CSS, then add a `@source` for your screens. Lowest first:
+ * React Strict DOM's defaults replace Tailwind's reset, and a `className` beats a `style`.
+ */
+@layer theme, base, strict-dom, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Variants like `ios:` and `web:`, and safe-area utilities like `pt-safe`. Only CSS: nothing reaches the web bundle. */
+@import "uniwind";
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+}

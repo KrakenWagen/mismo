@@ -8,6 +8,7 @@ Thanks for helping. This page covers how the repository is laid out and how to w
 | --- | --- |
 | `packages/core` | `@mismo/core`: the shared API, config, Vite plugin and CLI |
 | `packages/expo`, `packages/react-navigation`, `packages/next`, `packages/tanstack`, `packages/react-router` | `@mismo/*`: one package per router |
+| `packages/ui` | `@mismo/ui`: React Strict DOM with Tailwind's `className`, independent of the routers |
 | `packages/create-mismo` | `pnpm create mismo`: sets up the [starter](https://github.com/KrakenWagen/mismo-starter) with the apps a person picks |
 | `examples` | The shared routes, and apps that build them on Next.js, TanStack Start and React Router |
 | `tests` | Tests across the packages |
