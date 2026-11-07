@@ -8,6 +8,16 @@
   #mismo-demo-panel, #mismo-demo-launcher { --bg: #1f1f23; --fg: #f2f2f3; --muted: #a0a0a8; --line: #303036; --accent: #f5a35c; }
 }
 
+/* They come in rather than pop in: out of a blur, and up a little. Not for those who ask for less motion. */
+@keyframes mismo-demo-in {
+  from { opacity: 0; transform: translateY(14px); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+#mismo-demo-panel, #mismo-demo-launcher { animation: mismo-demo-in .6s cubic-bezier(.22, 1, .36, 1) backwards; }
+@media (prefers-reduced-motion: reduce) {
+  #mismo-demo-panel, #mismo-demo-launcher { animation: none; }
+}
+
 /* The panel: a QR code to scan. */
 #mismo-demo-panel { width: 216px; padding: 14px; border-radius: 14px; box-shadow: 0 8px 28px rgba(0, 0, 0, .14); }
 #mismo-demo-panel strong { display: block; padding-right: 20px; font-size: 14px; }
